@@ -1,0 +1,181 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #0d0d0f;
+  --bg-surface: #161619;
+  --bg-elevated: #1e1e23;
+  --bg-control: #252530;
+
+  --accent-primary: #ff6b2b;
+  --accent-secondary: #ffb347;
+  --accent-dim: rgba(255, 107, 43, 0.15);
+
+  --text-primary: #f0ede8;
+  --text-secondary: #8a8797;
+  --text-muted: #4a4855;
+
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-accent: rgba(255, 107, 43, 0.4);
+
+  --beat-flash: #ff6b2b;
+  --beat-downbeat: #ff2b2b;
+
+  --success: #4ade80;
+  --error: #f87171;
+}
+
+[data-theme="light"] {
+  --bg-primary: #f5f4f0;
+  --bg-surface: #ebebe7;
+  --bg-elevated: #e0dfd9;
+  --bg-control: #d4d3cd;
+  --accent-primary: #d94f1a;
+  --accent-secondary: #e07a1f;
+  --accent-dim: rgba(217, 79, 26, 0.12);
+  --text-primary: #1a1916;
+  --text-secondary: #5a5850;
+  --text-muted: #9a9890;
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-accent: rgba(217, 79, 26, 0.4);
+  --beat-flash: #d94f1a;
+  --beat-downbeat: #cc2020;
+}
+
+@theme inline {
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-control: var(--bg-control);
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-accent-dim: var(--accent-dim);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-accent: var(--border-accent);
+  --color-beat-flash: var(--beat-flash);
+  --color-beat-downbeat: var(--beat-downbeat);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+  --font-body: var(--font-body);
+}
+
+@keyframes beat-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  15% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+}
+
+@keyframes downbeat-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0px var(--beat-downbeat);
+  }
+  15% {
+    transform: scale(1.7);
+    box-shadow: 0 0 24px var(--beat-downbeat);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0px transparent;
+  }
+}
+
+@keyframes number-glow {
+  0% {
+    text-shadow: none;
+  }
+  10% {
+    text-shadow: 0 0 40px var(--accent-primary),
+      0 0 80px rgba(255, 107, 43, 0.4);
+  }
+  100% {
+    text-shadow: none;
+  }
+}
+
+@keyframes edge-flash {
+  0% {
+    box-shadow: inset 0 0 0 0 transparent;
+  }
+  8% {
+    box-shadow: inset 0 0 60px 12px rgba(255, 107, 43, 0.3);
+  }
+  100% {
+    box-shadow: inset 0 0 0 0 transparent;
+  }
+}
+
+@keyframes pulse-bar-sweep {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+
+@keyframes flash-mode {
+  0% {
+    background-color: var(--bg-primary);
+  }
+  5% {
+    background-color: var(--accent-primary);
+  }
+  100% {
+    background-color: var(--bg-primary);
+  }
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-control);
+  border-radius: 3px;
+}
+
+/* Dial component styles */
+.dial-tick {
+  position: absolute;
+  width: 2px;
+  height: 8px;
+  background: var(--text-muted);
+  transform-origin: center 60px;
+}
+
+.dial-tick.active {
+  background: var(--accent-primary);
+  height: 10px;
+}

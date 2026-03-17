@@ -1,0 +1,603 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useMetronome } from '@/hooks/useMetronome';
+
+import { useKeyboard } from '@/hooks/useKeyboard';
+
+import BpmDisplay from '@/components/metronome/BpmDisplay';
+import BeatVisualizer from '@/components/metronome/BeatVisualizer';
+import TransportBar from '@/components/metronome/TransportBar';
+
+import SubdivisionPicker from '@/components/metronome/SubdivisionPicker';
+import TimeSigPicker from '@/components/metronome/TimeSigPicker';
+import SoundPicker from '@/components/metronome/SoundPicker';
+import AccentEditor from '@/components/metronome/AccentEditor';
+import PulseBar from '@/components/metronome/PulseBar';
+import TempoTrainer from '@/components/metronome/TempoTrainer';
+import TimerPanel from '@/components/metronome/TimerPanel';
+
+import {
+  Zap,
+  Keyboard,
+  Sun,
+  Moon,
+  Volume2,
+  VolumeX,
+  X,
+} from 'lucide-react';
+import { TimerConfig } from '@/types/metronome';
+
+type HeaderPanel = 'trainer' | 'timer' | null;
+
+/* ── Flash Mode overlay ── */
+function FlashModeOverlay({
+  bpm,
+  currentBeat,
+  beatsPerBar,
+  flashBeat,
+  isPlaying,
+  onClose,
+}: {
+  bpm: number;
+  currentBeat: number;
+  beatsPerBar: number;
+  flashBeat: number | null;
+  isPlaying: boolean;
+  onClose: () => void;
+}) {
+  const isFlashing = isPlaying && flashBeat !== null;
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center select-none"
+      style={{
+        backgroundColor: isFlashing ? 'var(--accent-primary)' : 'var(--bg-primary)',
+        transition: 'background-color 0.08s ease-out',
+      }}
+    >
+      {/* Close button */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 p-3 rounded-lg transition-colors"
+        style={{
+          color: isFlashing ? '#fff' : 'var(--text-muted)',
+          backgroundColor: isFlashing ? 'rgba(0,0,0,0.2)' : 'var(--bg-control)',
+        }}
+      >
+        <X size={24} />
+      </button>
+
+      {/* BPM */}
+      <div
+        style={{
+          fontFamily: 'var(--font-display), "Bebas Neue", sans-serif',
+          fontSize: 'clamp(120px, 25vw, 240px)',
+          lineHeight: 1,
+          color: isFlashing ? '#fff' : 'var(--text-primary)',
+          transition: 'color 0.08s ease-out',
+        }}
+      >
+        {bpm}
+      </div>
+
+      {/* Beat dots */}
+      <div className="flex gap-4 mt-6">
+        {Array.from({ length: beatsPerBar }).map((_, i) => {
+          const isActive = isPlaying && currentBeat === i;
+          const isDownbeat = i === 0;
+          return (
+            <div
+              key={i}
+              style={{
+                width: 20,
+                height: 20,
+                borderRadius: '50%',
+                backgroundColor: isActive
+                  ? isDownbeat
+                    ? 'var(--beat-downbeat)'
+                    : isFlashing ? '#fff' : 'var(--accent-primary)'
+                  : isFlashing ? 'rgba(255,255,255,0.3)' : 'var(--bg-control)',
+                transition: 'background-color 0.08s ease-out',
+                boxShadow: isActive && isDownbeat ? '0 0 16px var(--beat-downbeat)' : 'none',
+              }}
+            />
+          );
+        })}
+      </div>
+
+      {/* Hint */}
+      <div
+        className="absolute bottom-6 text-xs"
+        style={{
+          fontFamily: 'var(--font-mono), monospace',
+          color: isFlashing ? 'rgba(255,255,255,0.5)' : 'var(--text-muted)',
+        }}
+      >
+        点击 × 或按 ESC 退出
+      </div>
+    </div>
+  );
+}
+
+function formatTimerDisplay(timer: TimerConfig): string {
+  if (!timer.enabled) return '计时器';
+  const m = Math.floor(timer.remainingSeconds / 60);
+  const s = timer.remainingSeconds % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function HeaderPill({
+  label,
+  active,
+  open,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  open: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-all whitespace-nowrap"
+      style={{
+        backgroundColor: open
+          ? 'var(--accent-dim)'
+          : active
+          ? 'rgba(255,107,43,0.08)'
+          : 'var(--bg-control)',
+        border: `1px solid ${open ? 'var(--border-accent)' : active ? 'rgba(255,107,43,0.25)' : 'var(--border-subtle)'}`,
+        color: open || active ? 'var(--accent-primary)' : 'var(--text-secondary)',
+        fontFamily: 'var(--font-mono), monospace',
+      }}
+    >
+      {active && (
+        <span
+          style={{
+            width: 6,
+            height: 6,
+            borderRadius: '50%',
+            backgroundColor: 'var(--accent-primary)',
+            flexShrink: 0,
+          }}
+        />
+      )}
+      {label}
+      <span style={{ opacity: 0.5, fontSize: '10px' }}>{open ? '▲' : '▼'}</span>
+    </button>
+  );
+}
+
+export default function Home() {
+  const metronome = useMetronome();
+  const { state } = metronome;
+
+  const [openPanel, setOpenPanel] = useState<HeaderPanel>(null);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const [theme, setTheme] = useState<'dark' | 'light' | null>(null);
+  const [isFlashMode, setIsFlashMode] = useState(false);
+
+  // Read theme from DOM after mount (already applied by blocking script in layout.tsx)
+  useEffect(() => {
+    const applied = document.documentElement.getAttribute('data-theme');
+    setTheme(applied === 'light' ? 'light' : 'dark');
+  }, []);
+
+  // Sync to DOM and localStorage when theme changes
+  useEffect(() => {
+    if (!theme) return;
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('metronome-theme', theme);
+  }, [theme]);
+
+  // Keyboard shortcuts
+  useKeyboard({
+    toggle: metronome.toggle,
+    setBpm: metronome.setBpm,
+    bpm: state.bpm,
+  });
+
+  // ESC to close flash mode
+  useEffect(() => {
+    if (!isFlashMode) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsFlashMode(false);
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [isFlashMode]);
+
+  // WakeLock
+  useEffect(() => {
+    let wakeLock: WakeLockSentinel | null = null;
+
+    const requestWakeLock = async () => {
+      if (state.isPlaying && 'wakeLock' in navigator) {
+        try {
+          wakeLock = await navigator.wakeLock.request('screen');
+        } catch {
+          // ignore
+        }
+      }
+    };
+
+    if (state.isPlaying) {
+      requestWakeLock();
+    }
+
+    return () => {
+      wakeLock?.release();
+    };
+  }, [state.isPlaying]);
+
+  // Edge flash effect
+  const showEdgeFlash = state.isPlaying && state.flashBeat !== null;
+
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+  }, []);
+
+  return (
+    <div
+      className="min-h-screen flex flex-col relative"
+      style={{
+        backgroundColor: 'var(--bg-primary)',
+        animation: showEdgeFlash ? 'edge-flash 0.5s ease-out' : 'none',
+      }}
+    >
+      {/* Flash Mode overlay */}
+      {isFlashMode && (
+        <FlashModeOverlay
+          bpm={state.bpm}
+          currentBeat={state.currentBeat}
+          beatsPerBar={state.beatsPerBar}
+          flashBeat={state.flashBeat}
+          isPlaying={state.isPlaying}
+          onClose={() => setIsFlashMode(false)}
+        />
+      )}
+
+      {/* Pulse bar */}
+      <PulseBar
+        isPlaying={state.isPlaying}
+        flashBeat={state.flashBeat}
+        currentBeat={state.currentBeat}
+        isDownbeat={state.currentBeat === 0}
+      />
+
+      {/* Header with toolbar pills */}
+      <header
+        className="grid px-4 py-2 sm:px-6"
+        style={{
+          gridTemplateColumns: '1fr auto 1fr',
+          alignItems: 'center',
+          borderBottom: '1px solid var(--border-subtle)',
+          position: 'relative',
+          zIndex: 50,
+        }}
+      >
+        {/* Logo — animated metronome pendulum */}
+        <div className="flex items-center" style={{ width: 28, height: 28 }}>
+          <svg
+            viewBox="0 0 28 28"
+            width="28"
+            height="28"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="节拍器"
+          >
+            {/* Metronome body — trapezoid */}
+            <path
+              d="M7 24 L10 6 L18 6 L21 24 Z"
+              fill="none"
+              stroke="var(--text-secondary)"
+              strokeWidth="1.2"
+              strokeLinejoin="round"
+            />
+            {/* Base bottom line */}
+            <line
+              x1="6" y1="24" x2="22" y2="24"
+              stroke="var(--text-secondary)"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+            />
+            {/* Pendulum rod — pivots from center top of body */}
+            <line
+              x1="14" y1="7"
+              x2="14" y2="21"
+              stroke="var(--accent-primary)"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              style={{
+                transformOrigin: '14px 7px',
+                animation: state.isPlaying
+                  ? 'pendulum-swing 0.5s ease-in-out infinite alternate'
+                  : 'none',
+              }}
+            />
+            {/* Pendulum weight */}
+            <circle
+              cx="14" cy="19"
+              r="2"
+              fill="var(--accent-primary)"
+              style={{
+                transformOrigin: '14px 7px',
+                animation: state.isPlaying
+                  ? 'pendulum-swing 0.5s ease-in-out infinite alternate'
+                  : 'none',
+              }}
+            />
+          </svg>
+          <style>{`
+            @keyframes pendulum-swing {
+              from { transform: rotate(-22deg); }
+              to   { transform: rotate(22deg); }
+            }
+          `}</style>
+        </div>
+
+        {/* Toolbar pills - truly centered via grid */}
+        <div className="flex items-center gap-1.5 overflow-x-auto">
+          <HeaderPill
+            label="速度训练"
+            active={metronome.tempoTrainer.enabled}
+            open={openPanel === 'trainer'}
+            onClick={() => setOpenPanel(p => p === 'trainer' ? null : 'trainer')}
+          />
+          <HeaderPill
+            label={formatTimerDisplay(metronome.timer)}
+            active={metronome.timer.enabled}
+            open={openPanel === 'timer'}
+            onClick={() => setOpenPanel(p => p === 'timer' ? null : 'timer')}
+          />
+        </div>
+
+        {/* Right icons: theme, keyboard, fullscreen */}
+        <div className="flex items-center gap-1 justify-end">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded transition-colors"
+            style={{ color: 'var(--text-muted)' }}
+            title={theme === 'light' ? '切换暗色主题' : '切换亮色主题'}
+          >
+            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+          </button>
+          <button
+            onClick={() => setShowShortcuts(!showShortcuts)}
+            className="p-2 rounded transition-colors hidden sm:flex"
+            style={{
+              color: showShortcuts ? 'var(--accent-primary)' : 'var(--text-muted)',
+              backgroundColor: showShortcuts ? 'var(--accent-dim)' : 'transparent',
+            }}
+            title="键盘快捷键"
+          >
+            <Keyboard size={18} />
+          </button>
+          <button
+            onClick={() => setIsFlashMode(true)}
+            className="p-2 rounded transition-colors"
+            style={{
+              color: isFlashMode ? 'var(--accent-primary)' : 'var(--text-muted)',
+              backgroundColor: isFlashMode ? 'var(--accent-dim)' : 'transparent',
+            }}
+            title="闪烁模式"
+          >
+            <Zap size={18} />
+          </button>
+        </div>
+
+        {/* Dropdown panels - positioned absolute below header */}
+        {openPanel && (
+          <>
+            {/* Backdrop to close on click outside */}
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setOpenPanel(null)}
+            />
+            <div
+              className="absolute left-0 right-0 z-50 px-4 sm:px-6 pt-2 pb-4"
+              style={{
+                top: '100%',
+                backgroundColor: 'var(--bg-surface)',
+                borderBottom: '1px solid var(--border-subtle)',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+              }}
+            >
+              {openPanel === 'trainer' && (
+                <TempoTrainer
+                  config={metronome.tempoTrainer}
+                  currentBpm={state.bpm}
+                  onChange={metronome.setTempoTrainer}
+                />
+              )}
+              {openPanel === 'timer' && (
+                <TimerPanel
+                  config={metronome.timer}
+                  onChange={metronome.setTimer}
+                />
+              )}
+            </div>
+          </>
+        )}
+      </header>
+
+      {/* Keyboard shortcuts overlay */}
+      {showShortcuts && (
+        <div
+          className="mx-4 sm:mx-6 mt-2 p-3 rounded-lg text-xs"
+          style={{
+            backgroundColor: 'var(--bg-surface)',
+            border: '1px solid var(--border-subtle)',
+            fontFamily: 'var(--font-mono), monospace',
+            color: 'var(--text-secondary)',
+          }}
+        >
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <span>
+              <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-control)' }}>空格</kbd> 播放/停止
+            </span>
+            <span>
+              <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-control)' }}>↑/↓</kbd> BPM ±1
+            </span>
+            <span>
+              <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-control)' }}>Shift+↑/↓</kbd> ±5
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Main content */}
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-6 sm:py-8 gap-6 sm:gap-8">
+        {/* BPM Display */}
+        <BpmDisplay
+          bpm={state.bpm}
+          flashBeat={state.flashBeat}
+          isPlaying={state.isPlaying}
+          onBpmChange={metronome.setBpm}
+        />
+
+        {/* Beat Visualizer */}
+        <div className="flex flex-col items-center gap-4">
+          <BeatVisualizer
+            beatsPerBar={state.beatsPerBar}
+            currentBeat={state.currentBeat}
+            accents={state.accents}
+            isPlaying={state.isPlaying}
+            onToggleAccent={metronome.toggleAccent}
+          />
+          <AccentEditor
+            accents={state.accents}
+            onToggleAccent={metronome.toggleAccent}
+          />
+        </div>
+
+        {/* BPM slider */}
+        <div className="w-full max-w-sm flex items-center gap-3 px-2">
+          <button
+            onClick={() => metronome.setBpm(state.bpm - 1)}
+            className="w-7 h-7 flex items-center justify-center rounded transition-all active:scale-95 flex-shrink-0"
+            style={{
+              backgroundColor: 'var(--bg-control)',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-secondary)',
+              fontSize: '16px',
+            }}
+          >−</button>
+          <input
+            type="range"
+            min="1"
+            max="300"
+            value={state.bpm}
+            onChange={(e) => metronome.setBpm(parseInt(e.target.value))}
+            className="flex-1 h-2 rounded-full appearance-none cursor-pointer"
+            style={{
+              background: `linear-gradient(to right, var(--accent-primary) 0%, var(--accent-primary) ${
+                ((state.bpm - 1) / 299) * 100
+              }%, var(--bg-control) ${((state.bpm - 1) / 299) * 100}%, var(--bg-control) 100%)`,
+              accentColor: 'var(--accent-primary)',
+            }}
+          />
+          <button
+            onClick={() => metronome.setBpm(state.bpm + 1)}
+            className="w-7 h-7 flex items-center justify-center rounded transition-all active:scale-95 flex-shrink-0"
+            style={{
+              backgroundColor: 'var(--bg-control)',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-secondary)',
+              fontSize: '16px',
+            }}
+          >+</button>
+        </div>
+
+        {/* Transport: Play/Stop */}
+        <TransportBar
+          isPlaying={state.isPlaying}
+          bpm={state.bpm}
+          onToggle={metronome.toggle}
+          onBpmChange={metronome.setBpm}
+        />
+
+        {/* Control bar: TimeSig, Subdivision, Sound, Volume */}
+        <div
+          className="w-full max-w-6xl rounded-lg p-4 sm:p-6"
+          style={{
+            backgroundColor: 'var(--bg-surface)',
+            border: '1px solid var(--border-subtle)',
+          }}
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-6">
+            <TimeSigPicker
+              beatsPerBar={state.beatsPerBar}
+              beatUnit={state.beatUnit}
+              onBeatsChange={metronome.setBeatsPerBar}
+              onBeatUnitChange={metronome.setBeatUnit}
+            />
+            <SubdivisionPicker
+              subdivision={state.subdivision}
+              onChange={metronome.setSubdivision}
+            />
+            <SoundPicker
+              sound={state.sound}
+              accentSound={state.accentSound}
+              onChange={metronome.setSound}
+              onAccentSoundChange={metronome.setAccentSound}
+            />
+            {/* Volume */}
+            <div className="flex flex-col gap-2">
+              <label
+                className="text-xs uppercase tracking-wider"
+                style={{
+                  fontFamily: 'var(--font-mono), monospace',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                音量
+              </label>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => metronome.setVolume(state.volume === 0 ? 1 : 0)}
+                  className="flex-shrink-0"
+                  style={{ color: state.volume === 0 ? 'var(--text-muted)' : 'var(--text-secondary)' }}
+                >
+                  {state.volume === 0 ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                </button>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={state.volume}
+                  onChange={(e) => metronome.setVolume(parseFloat(e.target.value))}
+                  className="flex-1 h-2 rounded-full appearance-none cursor-pointer"
+                  style={{
+                    background: `linear-gradient(to right, var(--accent-primary) 0%, var(--accent-primary) ${
+                      state.volume * 100
+                    }%, var(--bg-control) ${state.volume * 100}%, var(--bg-control) 100%)`,
+                    accentColor: 'var(--accent-primary)',
+                  }}
+                />
+                <span
+                  className="w-8 text-right flex-shrink-0 text-[10px]"
+                  style={{ fontFamily: 'var(--font-mono), monospace', color: 'var(--text-muted)' }}
+                >{Math.round(state.volume * 100)}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer
+        className="text-center py-3 text-xs"
+        style={{
+          fontFamily: 'var(--font-mono), monospace',
+          color: 'var(--text-muted)',
+          borderTop: '1px solid var(--border-subtle)',
+        }}
+      >
+        空格键 播放/停止 · ↑↓ 调整 BPM
+      </footer>
+    </div>
+  );
+}
