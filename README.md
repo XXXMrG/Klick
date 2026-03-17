@@ -2,8 +2,9 @@
 
 A precision metronome built for musicians. Runs in the browser, no installation needed.
 
-<!-- preview image -->
-![Klick preview](public/og-preview.png)
+<div align="center">
+  <img src="public/og-preview.png" alt="Klick preview" height="500" />
+</div>
 
 ## Features
 
