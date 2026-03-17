@@ -7,6 +7,7 @@ interface BeatVisualizerProps {
   currentBeat: number;
   accents: AccentLevel[];
   isPlaying: boolean;
+  visualMute?: boolean;
   onToggleAccent: (index: number) => void;
 }
 
@@ -15,6 +16,7 @@ export default function BeatVisualizer({
   currentBeat,
   accents,
   isPlaying,
+  visualMute = false,
   onToggleAccent,
 }: BeatVisualizerProps) {
   return (
@@ -41,7 +43,7 @@ export default function BeatVisualizer({
         }
 
         // transform scale for active state - does NOT cause layout shift
-        const scale = isActive ? (isDownbeat ? 1.45 : 1.25) : 1;
+        const scale = isActive && !visualMute ? (isDownbeat ? 1.45 : 1.25) : 1;
 
         return (
           <button
@@ -55,10 +57,10 @@ export default function BeatVisualizer({
               minHeight: 32,
               transform: `scale(${scale})`,
               transition: 'transform 0.08s ease-out, background-color 0.08s ease-out',
-              boxShadow: isActive && isDownbeat
-                ? '0 0 16px var(--beat-downbeat)'
-                : isActive
-                ? '0 0 10px var(--beat-flash)'
+              boxShadow: isActive && !visualMute
+                ? isDownbeat
+                  ? '0 0 16px var(--beat-downbeat)'
+                  : '0 0 10px var(--beat-flash)'
                 : 'none',
             }}
             title={`第 ${i + 1} 拍`}

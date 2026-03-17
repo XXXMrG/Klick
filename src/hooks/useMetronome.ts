@@ -35,7 +35,10 @@ const VALID_SUBDIVISIONS: SubdivisionType[] = [
   'sync-a', 'sync-b', 'sync-c', 'triplet16-a', 'triplet16-b',
 ];
 
-function loadSettings(): Partial<MetronomeState> {
+function loadSettings(): Partial<MetronomeState> & {
+  tempoTrainer?: Partial<TempoTrainerConfig>;
+  timer?: Partial<TimerConfig>;
+} {
   if (typeof window === 'undefined') return {};
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -52,7 +55,11 @@ function loadSettings(): Partial<MetronomeState> {
   }
 }
 
-function saveSettings(state: MetronomeState) {
+function saveSettings(
+  state: MetronomeState,
+  tempoTrainer: TempoTrainerConfig,
+  timer: TimerConfig,
+) {
   if (typeof window === 'undefined') return;
   try {
     const toSave = {
@@ -64,6 +71,17 @@ function saveSettings(state: MetronomeState) {
       accentSound: state.accentSound,
       accents: state.accents,
       volume: state.volume,
+      tempoTrainer: {
+        enabled: tempoTrainer.enabled,
+        startBpm: tempoTrainer.startBpm,
+        targetBpm: tempoTrainer.targetBpm,
+        incrementBpm: tempoTrainer.incrementBpm,
+        everyNBars: tempoTrainer.everyNBars,
+      },
+      timer: {
+        enabled: timer.enabled,
+        durationMinutes: timer.durationMinutes,
+      },
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
   } catch {}
@@ -105,16 +123,27 @@ export function useMetronome() {
   useEffect(() => {
     const saved = loadSettings();
     if (Object.keys(saved).length > 0) {
-      setState(prev => ({ ...prev, ...saved }));
+      const { tempoTrainer: savedTrainer, timer: savedTimer, ...savedState } = saved;
+      setState(prev => ({ ...prev, ...savedState }));
+      if (savedTrainer) {
+        setTempoTrainer(prev => ({ ...prev, ...savedTrainer }));
+      }
+      if (savedTimer) {
+        setTimer(prev => ({
+          ...prev,
+          ...savedTimer,
+          remainingSeconds: (savedTimer.durationMinutes ?? prev.durationMinutes) * 60,
+        }));
+      }
       const scheduler = schedulerRef.current;
       if (scheduler) {
-        if (saved.bpm) scheduler.setBpm(saved.bpm);
-        if (saved.beatsPerBar) scheduler.setBeatsPerBar(saved.beatsPerBar);
-        if (saved.subdivision) scheduler.setSubdivision(saved.subdivision);
-        if (saved.sound) scheduler.setSound(saved.sound);
-        if (saved.accentSound) scheduler.setAccentSound(saved.accentSound);
-        if (saved.accents) scheduler.setAccents(saved.accents);
-        if (saved.volume !== undefined) scheduler.setVolume(saved.volume);
+        if (savedState.bpm) scheduler.setBpm(savedState.bpm);
+        if (savedState.beatsPerBar) scheduler.setBeatsPerBar(savedState.beatsPerBar);
+        if (savedState.subdivision) scheduler.setSubdivision(savedState.subdivision);
+        if (savedState.sound) scheduler.setSound(savedState.sound);
+        if (savedState.accentSound) scheduler.setAccentSound(savedState.accentSound);
+        if (savedState.accents) scheduler.setAccents(savedState.accents);
+        if (savedState.volume !== undefined) scheduler.setVolume(savedState.volume);
       }
     }
     setHydrated(true);
@@ -123,8 +152,8 @@ export function useMetronome() {
   // Auto-save settings to localStorage — only after hydration to avoid overwriting saved data
   useEffect(() => {
     if (!hydrated) return;
-    saveSettings(state);
-  }, [hydrated, state.bpm, state.beatsPerBar, state.beatUnit, state.subdivision, state.sound, state.accentSound, state.accents, state.volume]);
+    saveSettings(state, tempoTrainer, timer);
+  }, [hydrated, state.bpm, state.beatsPerBar, state.beatUnit, state.subdivision, state.sound, state.accentSound, state.accents, state.volume, tempoTrainer, timer.enabled, timer.durationMinutes]);
 
   const onBeatCallback: BeatCallback = useCallback((event) => {
     setState((prev) => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useMetronome } from '@/hooks/useMetronome';
 
 import { useKeyboard } from '@/hooks/useKeyboard';
@@ -25,8 +25,11 @@ import {
   Volume2,
   VolumeX,
   X,
+  Eye,
+  EyeOff,
+  TrendingUp,
+  Timer,
 } from 'lucide-react';
-import { TimerConfig } from '@/types/metronome';
 
 type HeaderPanel = 'trainer' | 'timer' | null;
 
@@ -119,56 +122,6 @@ function FlashModeOverlay({
   );
 }
 
-function formatTimerDisplay(timer: TimerConfig): string {
-  if (!timer.enabled) return '计时器';
-  const m = Math.floor(timer.remainingSeconds / 60);
-  const s = timer.remainingSeconds % 60;
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
-
-function HeaderPill({
-  label,
-  active,
-  open,
-  onClick,
-}: {
-  label: string;
-  active: boolean;
-  open: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-all whitespace-nowrap"
-      style={{
-        backgroundColor: open
-          ? 'var(--accent-dim)'
-          : active
-          ? 'rgba(255,107,43,0.08)'
-          : 'var(--bg-control)',
-        border: `1px solid ${open ? 'var(--border-accent)' : active ? 'rgba(255,107,43,0.25)' : 'var(--border-subtle)'}`,
-        color: open || active ? 'var(--accent-primary)' : 'var(--text-secondary)',
-        fontFamily: 'var(--font-mono), monospace',
-      }}
-    >
-      {active && (
-        <span
-          style={{
-            width: 6,
-            height: 6,
-            borderRadius: '50%',
-            backgroundColor: 'var(--accent-primary)',
-            flexShrink: 0,
-          }}
-        />
-      )}
-      {label}
-      <span style={{ opacity: 0.5, fontSize: '10px' }}>{open ? '▲' : '▼'}</span>
-    </button>
-  );
-}
-
 export default function Home() {
   const metronome = useMetronome();
   const { state } = metronome;
@@ -177,11 +130,13 @@ export default function Home() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light' | null>(null);
   const [isFlashMode, setIsFlashMode] = useState(false);
+  const [visualMute, setVisualMute] = useState(false);
 
-  // Read theme from DOM after mount (already applied by blocking script in layout.tsx)
+  // Read theme and visualMute from storage after mount
   useEffect(() => {
     const applied = document.documentElement.getAttribute('data-theme');
     setTheme(applied === 'light' ? 'light' : 'dark');
+    setVisualMute(localStorage.getItem('metronome-visual-mute') === 'true');
   }, []);
 
   // Sync to DOM and localStorage when theme changes
@@ -190,6 +145,13 @@ export default function Home() {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('metronome-theme', theme);
   }, [theme]);
+
+  // Sync visualMute to localStorage (skip initial render to avoid overwriting stored value)
+  const visualMuteMounted = useRef(false);
+  useEffect(() => {
+    if (!visualMuteMounted.current) { visualMuteMounted.current = true; return; }
+    localStorage.setItem('metronome-visual-mute', String(visualMute));
+  }, [visualMute]);
 
   // Keyboard shortcuts
   useKeyboard({
@@ -232,7 +194,11 @@ export default function Home() {
   }, [state.isPlaying]);
 
   // Edge flash effect
-  const showEdgeFlash = state.isPlaying && state.flashBeat !== null;
+  const showEdgeFlash = !visualMute && state.isPlaying && state.flashBeat !== null;
+
+  // Visual state — when muted, suppress beat animations
+  const visualFlashBeat = visualMute ? null : state.flashBeat;
+  const visualIsPlaying = visualMute ? false : state.isPlaying;
 
   const toggleTheme = useCallback(() => {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
@@ -252,7 +218,7 @@ export default function Home() {
           bpm={state.bpm}
           currentBeat={state.currentBeat}
           beatsPerBar={state.beatsPerBar}
-          flashBeat={state.flashBeat}
+          flashBeat={visualFlashBeat}
           isPlaying={state.isPlaying}
           onClose={() => setIsFlashMode(false)}
         />
@@ -260,18 +226,16 @@ export default function Home() {
 
       {/* Pulse bar */}
       <PulseBar
-        isPlaying={state.isPlaying}
-        flashBeat={state.flashBeat}
+        isPlaying={visualIsPlaying}
+        flashBeat={visualFlashBeat}
         currentBeat={state.currentBeat}
         isDownbeat={state.currentBeat === 0}
       />
 
-      {/* Header with toolbar pills */}
+      {/* Header */}
       <header
-        className="grid px-4 py-2 sm:px-6"
+        className="flex items-center justify-between px-4 py-2 sm:px-6"
         style={{
-          gridTemplateColumns: '1fr auto 1fr',
-          alignItems: 'center',
           borderBottom: '1px solid var(--border-subtle)',
           position: 'relative',
           zIndex: 50,
@@ -337,24 +301,52 @@ export default function Home() {
           `}</style>
         </div>
 
-        {/* Toolbar pills - truly centered via grid */}
-        <div className="flex items-center gap-1.5 overflow-x-auto">
-          <HeaderPill
-            label="速度训练"
-            active={metronome.tempoTrainer.enabled}
-            open={openPanel === 'trainer'}
+        {/* Right icons */}
+        <div className="flex items-center gap-1">
+          <button
             onClick={() => setOpenPanel(p => p === 'trainer' ? null : 'trainer')}
-          />
-          <HeaderPill
-            label={formatTimerDisplay(metronome.timer)}
-            active={metronome.timer.enabled}
-            open={openPanel === 'timer'}
+            className="p-2 rounded transition-colors relative"
+            style={{
+              color: (openPanel === 'trainer' || metronome.tempoTrainer.enabled) ? 'var(--accent-primary)' : 'var(--text-muted)',
+              backgroundColor: (openPanel === 'trainer' || metronome.tempoTrainer.enabled) ? 'var(--accent-dim)' : 'transparent',
+            }}
+            title="速度训练"
+          >
+            <TrendingUp size={18} />
+            {metronome.tempoTrainer.enabled && (
+              <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--accent-primary)' }} />
+            )}
+          </button>
+          <button
             onClick={() => setOpenPanel(p => p === 'timer' ? null : 'timer')}
-          />
-        </div>
-
-        {/* Right icons: theme, keyboard, fullscreen */}
-        <div className="flex items-center gap-1 justify-end">
+            className="p-2 rounded transition-colors flex items-center gap-1"
+            style={{
+              color: (openPanel === 'timer' || metronome.timer.enabled) ? 'var(--accent-primary)' : 'var(--text-muted)',
+              backgroundColor: (openPanel === 'timer' || metronome.timer.enabled) ? 'var(--accent-dim)' : 'transparent',
+            }}
+            title="计时器"
+          >
+            <Timer size={18} />
+            {metronome.timer.enabled && (
+              <span
+                className="text-[10px] leading-none tabular-nums"
+                style={{ fontFamily: 'var(--font-mono), monospace' }}
+              >
+                {Math.floor(metronome.timer.remainingSeconds / 60)}:{(metronome.timer.remainingSeconds % 60).toString().padStart(2, '0')}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setVisualMute(v => !v)}
+            className="p-2 rounded transition-colors"
+            style={{
+              color: visualMute ? 'var(--accent-primary)' : 'var(--text-muted)',
+              backgroundColor: visualMute ? 'var(--accent-dim)' : 'transparent',
+            }}
+            title={visualMute ? '开启视觉效果' : '关闭视觉效果'}
+          >
+            {visualMute ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
           <button
             onClick={toggleTheme}
             className="p-2 rounded transition-colors"
@@ -452,7 +444,7 @@ export default function Home() {
         {/* BPM Display */}
         <BpmDisplay
           bpm={state.bpm}
-          flashBeat={state.flashBeat}
+          flashBeat={visualFlashBeat}
           isPlaying={state.isPlaying}
           onBpmChange={metronome.setBpm}
         />
@@ -464,6 +456,7 @@ export default function Home() {
             currentBeat={state.currentBeat}
             accents={state.accents}
             isPlaying={state.isPlaying}
+            visualMute={visualMute}
             onToggleAccent={metronome.toggleAccent}
           />
           <AccentEditor

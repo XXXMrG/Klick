@@ -1,52 +1,61 @@
-# Klick — Web Metronome
+# Klick
 
-A precision metronome built for musicians. Runs in the browser, no installation needed.
+**A precision web metronome built for musicians who care about timing.**
+
+No install. No signup. Just open and play.
+
+[**README in Chinese / 中文文档**](./README.zh-CN.md)
 
 <div align="center">
   <img src="public/og-preview.png" alt="Klick preview" height="500" />
 </div>
 
+---
+
+## Why Klick?
+
+Most online metronomes feel like toys — laggy clicks, no subdivisions, no accent control. Klick uses the Web Audio API's lookahead scheduling to deliver **sub-millisecond timing accuracy**, the same technique used in professional DAWs. Everything runs client-side, works offline after first load, and saves your settings automatically.
+
 ## Features
 
-- **Precise timing** — Web Audio API scheduler with sub-millisecond accuracy
-- **Tap Tempo** — tap any key or button to set BPM
-- **Beat visualizer** — per-beat accent control (normal / accent / ghost)
-- **Time signatures** — any numerator, 4 common denominators
-- **Subdivisions** — 11 types: quarter, eighth, triplet, sixteenth, dotted, syncopated, and more
-- **Sound picker** — multiple click sounds + separate accent sound
-- **Tempo Trainer** — auto-increase BPM over time to build speed
-- **Timer** — count-down practice sessions, auto-stops playback
-- **Flash Mode** — full-screen flash overlay for visual cueing
-- **Keyboard shortcuts** — Space to play/stop, ↑↓ to adjust BPM
-- **Dark / Light theme** — persisted across sessions
-- **Wake Lock** — screen stays on while playing on mobile
-- **Settings persistence** — BPM, time sig, sounds saved to localStorage
+**Core**
+- Sub-millisecond timing via Web Audio API lookahead scheduler
+- Tap Tempo — tap any key or button to set BPM
+- BPM range 1–300, adjustable via slider, keyboard, scroll wheel, or direct input
 
-## Tech Stack
+**Rhythm**
+- Any time signature (2/4, 3/4, 4/4, 5/4, 7/8, ...)
+- 11 subdivision patterns — quarter, eighth, triplet, sixteenth, dotted, syncopated, and more
+- Per-beat accent editor — cycle through accent / normal / ghost / mute per beat
 
-- [Next.js 15](https://nextjs.org/) (App Router)
-- [React 19](https://react.dev/)
-- [Tailwind CSS v4](https://tailwindcss.com/)
-- [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) — no audio libraries
-- [Lucide React](https://lucide.dev/) — icons
-- TypeScript throughout
+**Sound**
+- Multiple click tones with separate accent sound selection
+- Volume control with one-click mute
 
-## Getting Started
+**Practice Tools**
+- Tempo Trainer — auto-increment BPM every N bars to build speed progressively
+- Timer — countdown practice sessions, auto-stops when time is up
+- Flash Mode — full-screen visual pulse, great for stage or distance viewing
+
+**Quality of Life**
+- Dark / Light theme
+- Visual mute — turn off all beat animations while keeping audio
+- Keyboard shortcuts (Space, arrows, Esc)
+- Wake Lock — screen stays on while playing (mobile)
+- All settings persisted to localStorage — pick up right where you left off
+
+## Quick Start
 
 ```bash
-# Install dependencies
 npm install
-
-# Run dev server
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
 ```bash
-# Production build
-npm run build
-npm start
+# Production
+npm run build && npm start
 ```
 
 ## Keyboard Shortcuts
@@ -55,19 +64,29 @@ npm start
 |-----|--------|
 | `Space` | Play / Stop |
 | `↑` / `↓` | BPM ±1 |
-| `Shift + ↑` / `↓` | BPM ±5 |
+| `Shift + ↑/↓` | BPM ±5 |
 | `Esc` | Exit Flash Mode |
+
+## Tech Stack
+
+| Layer | Tech |
+|-------|------|
+| Framework | [Next.js 16](https://nextjs.org/) (App Router) |
+| UI | [React 19](https://react.dev/) + [Tailwind CSS v4](https://tailwindcss.com/) |
+| Audio | [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) — zero dependencies |
+| Icons | [Lucide React](https://lucide.dev/) |
+| Language | TypeScript |
 
 ## Project Structure
 
 ```
 src/
-├── app/              # Next.js app entry, global styles
+├── app/              # Next.js app entry, layout, global styles
 ├── components/
-│   └── metronome/    # UI components (BpmDisplay, BeatVisualizer, etc.)
+│   └── metronome/    # UI: BpmDisplay, BeatVisualizer, TransportBar, ...
 ├── hooks/            # useMetronome, useTapBpm, useKeyboard, usePresets
 ├── lib/
-│   └── audio/        # AudioEngine, scheduler, sound definitions
+│   └── audio/        # AudioEngine, lookahead scheduler, sound definitions
 └── types/            # Shared TypeScript types
 ```
 
