@@ -13,7 +13,8 @@ export type SubdivisionType =
   | "sync-b"          // 8: 切分节奏 B
   | "sync-c"          // 9: 切分节奏 C
   | "triplet16-a"     // 10: 十六分三连音 A
-  | "triplet16-b";    // 11: 十六分三连音 B
+  | "triplet16-b"     // 11: 十六分三连音 B
+  | "quintuplet";     // 12: 五连音
 
 export interface SubdivisionConfig {
   type: SubdivisionType;
@@ -35,6 +36,7 @@ export const SUBDIVISION_CONFIGS: Record<SubdivisionType, SubdivisionConfig> = {
   "sync-c":       { type: "sync-c",       notesPerBeat: 4, intervals: [2*S, S, S, 2*S] },
   "triplet16-a":  { type: "triplet16-a",  notesPerBeat: 4, intervals: [3*S, S, S, S] },
   "triplet16-b":  { type: "triplet16-b",  notesPerBeat: 4, intervals: [S, S, S, 3*S] },
+  "quintuplet":   { type: "quintuplet",   notesPerBeat: 5, intervals: [0.2, 0.2, 0.2, 0.2, 0.2] },
 };
 
 export interface SubdivisionOption {
@@ -56,6 +58,7 @@ export const SUBDIVISIONS: SubdivisionOption[] = [
   { type: "sync-c",       label: "切分 C",   englishName: "Syncopation C",        description: "切分节奏 2:1:1:2" },
   { type: "triplet16-a",  label: "16分³A",   englishName: "16th Triplet A",       description: "十六分三连音 3:1:1:1" },
   { type: "triplet16-b",  label: "16分³B",   englishName: "16th Triplet B",       description: "十六分三连音 1:1:1:3" },
+  { type: "quintuplet",   label: "五连音",   englishName: "Quintuplet",           description: "每拍 5 下，等分" },
 ];
 
 export interface MetronomeState {

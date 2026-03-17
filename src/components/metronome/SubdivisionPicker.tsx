@@ -16,6 +16,7 @@ const SUBDIVISION_IMAGES: Record<SubdivisionType, string> = {
   'sync-c':       '/sub9.webp',
   'triplet16-a':  '/sub10.webp',
   'triplet16-b':  '/sub11.webp',
+  'quintuplet':   '',
 };
 
 function BeatPatternDots({ type }: { type: SubdivisionType }) {
@@ -105,7 +106,7 @@ export default function SubdivisionPicker({ subdivision, onChange }: Subdivision
         细分
       </label>
 
-      <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-4 xl:grid-cols-6 gap-1">
+      <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(64px, 1fr))' }}>
         {SUBDIVISIONS.map((sub) => {
           const isActive = subdivision === sub.type;
           return (
@@ -182,13 +183,15 @@ export default function SubdivisionPicker({ subdivision, onChange }: Subdivision
               minWidth: 110,
             }}
           >
-            <Image
-              src={SUBDIVISION_IMAGES[preview.type]}
-              alt={preview.type}
-              width={90}
-              height={56}
-              style={{ objectFit: 'contain', display: 'block' }}
-            />
+            {SUBDIVISION_IMAGES[preview.type] && (
+              <Image
+                src={SUBDIVISION_IMAGES[preview.type]}
+                alt={preview.type}
+                width={90}
+                height={56}
+                style={{ objectFit: 'contain', display: 'block' }}
+              />
+            )}
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 11, fontWeight: 600, color: '#222', fontFamily: 'monospace' }}>
                 {SUBDIVISIONS.find(s => s.type === preview.type)?.englishName}

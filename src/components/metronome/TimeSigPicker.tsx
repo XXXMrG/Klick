@@ -26,13 +26,13 @@ export default function TimeSigPicker({
       </label>
       <div className="flex items-center gap-3">
         {/* Beats per bar selector */}
-        <div className="flex flex-col items-center">
-          <div className="flex gap-1 flex-wrap max-w-[280px]">
+        <div className="flex-1 min-w-0">
+          <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(30px, 1fr))' }}>
             {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
               <button
                 key={n}
                 onClick={() => onBeatsChange(n)}
-                className="w-8 h-8 sm:w-9 sm:h-9 rounded text-xs transition-all flex items-center justify-center"
+                className="h-8 rounded text-xs transition-all flex items-center justify-center"
                 style={{
                   fontFamily: 'var(--font-mono), monospace',
                   backgroundColor:
@@ -52,7 +52,7 @@ export default function TimeSigPicker({
 
         {/* Divider */}
         <div
-          className="text-2xl font-bold"
+          className="text-2xl font-bold flex-shrink-0"
           style={{
             fontFamily: 'var(--font-display), sans-serif',
             color: 'var(--text-muted)',
@@ -62,12 +62,12 @@ export default function TimeSigPicker({
         </div>
 
         {/* Beat unit selector */}
-        <div className="flex gap-1">
+        <div className="flex gap-1 flex-shrink-0">
           {([4, 8] as const).map((unit) => (
             <button
               key={unit}
               onClick={() => onBeatUnitChange(unit)}
-              className="w-10 h-10 rounded text-sm transition-all flex items-center justify-center"
+              className="w-9 h-9 rounded text-sm transition-all flex items-center justify-center"
               style={{
                 fontFamily: 'var(--font-mono), monospace',
                 backgroundColor:

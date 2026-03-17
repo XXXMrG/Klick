@@ -33,6 +33,7 @@ const VALID_SUBDIVISIONS: SubdivisionType[] = [
   'quarter', 'eighth', 'triplet', 'sixteenth',
   'dotted-long', 'dotted-short',
   'sync-a', 'sync-b', 'sync-c', 'triplet16-a', 'triplet16-b',
+  'quintuplet',
 ];
 
 function loadSettings(): Partial<MetronomeState> & {
