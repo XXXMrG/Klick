@@ -22,8 +22,20 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "120 BPM | Metronome",
-  description: "Professional web metronome with precise audio scheduling",
+  title: "Klick — Web Metronome",
+  description:
+    "A precision metronome for musicians. Tap tempo, custom time signatures, subdivisions, accent editor, tempo trainer and more. Runs in the browser, no install needed.",
+  keywords: ["metronome", "tap tempo", "bpm", "music practice", "rhythm", "web metronome"],
+  openGraph: {
+    title: "Klick — Web Metronome",
+    description: "A precision metronome for musicians. Runs in the browser.",
+    type: "website",
+    images: ["/og-preview.png"],
+  },
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({
