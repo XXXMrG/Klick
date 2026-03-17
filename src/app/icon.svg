@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Background -->
+  <rect width="32" height="32" rx="7" fill="#0D0D0F"/>
+  <!-- Metronome body (trapezoid) -->
+  <path d="M10 28 L13 6 L19 6 L22 28 Z" stroke="#C8C3D2" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+  <!-- Pendulum rod (tilted, orange) -->
+  <line x1="16" y1="7" x2="21" y2="23" stroke="#FF6B2B" stroke-width="2" stroke-linecap="round"/>
+  <!-- Pendulum weight (orange dot) -->
+  <circle cx="21" cy="23" r="2.5" fill="#FF6B2B"/>
+</svg>
