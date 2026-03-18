@@ -103,23 +103,19 @@ export class MetronomeScheduler {
     // Determine volume based on accent level and whether it's a subdivision
     // Multiply by 2 for a louder default output
     let noteVolume = this._volume * 2;
-    if (isSubdivision) {
-      noteVolume *= 0.6; // subdivisions are quieter
-    } else {
-      switch (accentLevel) {
-        case 0: // mute
-          noteVolume = 0;
-          break;
-        case 1: // ghost
-          noteVolume *= 0.25;
-          break;
-        case 2: // normal
-          noteVolume *= 0.6;
-          break;
-        case 3: // accent
-          noteVolume *= 1.0;
-          break;
-      }
+    switch (accentLevel) {
+      case 0: // mute — silence the entire beat including subdivisions
+        noteVolume = 0;
+        break;
+      case 1: // ghost
+        noteVolume *= isSubdivision ? 0.15 : 0.25;
+        break;
+      case 2: // normal
+        noteVolume *= isSubdivision ? 0.35 : 0.6;
+        break;
+      case 3: // accent
+        noteVolume *= isSubdivision ? 0.6 : 1.0;
+        break;
     }
 
     if (noteVolume > 0) {
