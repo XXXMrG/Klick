@@ -1,6 +1,7 @@
 'use client';
 
 import { SoundType } from '@/types/metronome';
+import { useI18n } from '@/i18n';
 
 interface SoundPickerProps {
   sound: SoundType;
@@ -9,15 +10,15 @@ interface SoundPickerProps {
   onAccentSoundChange: (sound: SoundType) => void;
 }
 
-const SOUNDS: { value: SoundType; label: string; desc: string }[] = [
-  { value: 'tok',       label: 'Tok',    desc: '木质清脆，类机械摆' },
-  { value: 'beep',      label: 'Beep',   desc: '电子哔声，干净' },
-  { value: 'hihat',     label: 'HiHat',  desc: '踩镲，高频噪声' },
-  { value: 'kick',      label: 'Kick',   desc: '底鼓，低频冲击' },
-  { value: 'rim',       label: 'Rim',    desc: '军鼓边击，crack' },
-  { value: 'woodblock', label: 'Wood',   desc: '木鱼，共鸣感' },
-  { value: 'clap',      label: 'Clap',   desc: '拍手，自然感' },
-  { value: 'cowbell',   label: 'Bell',   desc: '牛铃，808 风格' },
+const SOUND_TYPES: { value: SoundType; label: string }[] = [
+  { value: 'tok',       label: 'Tok' },
+  { value: 'beep',      label: 'Beep' },
+  { value: 'hihat',     label: 'HiHat' },
+  { value: 'kick',      label: 'Kick' },
+  { value: 'rim',       label: 'Rim' },
+  { value: 'woodblock', label: 'Wood' },
+  { value: 'clap',      label: 'Clap' },
+  { value: 'cowbell',   label: 'Bell' },
 ];
 
 export default function SoundPicker({
@@ -26,6 +27,19 @@ export default function SoundPicker({
   onChange,
   onAccentSoundChange,
 }: SoundPickerProps) {
+  const { t } = useI18n();
+
+  const soundDescs: Record<SoundType, string> = {
+    tok: t.sound.tok,
+    beep: t.sound.beep,
+    hihat: t.sound.hihat,
+    kick: t.sound.kick,
+    rim: t.sound.rim,
+    woodblock: t.sound.woodblock,
+    clap: t.sound.clap,
+    cowbell: t.sound.cowbell,
+  };
+
   return (
     <div className="flex flex-col gap-3">
       {/* Normal sound section */}
@@ -43,7 +57,7 @@ export default function SoundPicker({
               color: 'var(--text-muted)',
             }}
           >
-            节拍音色
+            {t.sound.normalLabel}
           </label>
           <div
             className="text-[10px]"
@@ -53,15 +67,15 @@ export default function SoundPicker({
               opacity: 0.7,
             }}
           >
-            普通拍 / 弱拍使用
+            {t.sound.normalDesc}
           </div>
         </div>
         <div className="grid grid-cols-4 gap-1">
-          {SOUNDS.map((s) => (
+          {SOUND_TYPES.map((s) => (
             <button
               key={s.value}
               onClick={() => onChange(s.value)}
-              title={s.desc}
+              title={soundDescs[s.value]}
               className="px-2 py-2 rounded text-xs transition-all min-h-[36px] whitespace-nowrap overflow-hidden"
               style={{
                 fontFamily: 'var(--font-mono), monospace',
@@ -103,7 +117,7 @@ export default function SoundPicker({
               color: 'var(--text-muted)',
             }}
           >
-            强拍音色
+            {t.sound.accentLabel}
           </label>
           <div
             className="text-[10px]"
@@ -113,15 +127,15 @@ export default function SoundPicker({
               opacity: 0.7,
             }}
           >
-            第一拍（重音）使用
+            {t.sound.accentDesc}
           </div>
         </div>
         <div className="grid grid-cols-4 gap-1">
-          {SOUNDS.map((s) => (
+          {SOUND_TYPES.map((s) => (
             <button
               key={s.value}
               onClick={() => onAccentSoundChange(s.value)}
-              title={s.desc}
+              title={soundDescs[s.value]}
               className="px-2 py-2 rounded text-xs transition-all min-h-[36px] whitespace-nowrap overflow-hidden"
               style={{
                 fontFamily: 'var(--font-mono), monospace',

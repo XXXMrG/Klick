@@ -1,0 +1,120 @@
+import { TranslationKeys } from '../types';
+
+export const en: TranslationKeys = {
+  meta: {
+    title: 'Metronome',
+    titleWithBpm: '{bpm} BPM | Metronome',
+  },
+  header: {
+    tempoTrainer: 'Tempo Trainer',
+    timer: 'Timer',
+    visualOn: 'Enable visual effects',
+    visualOff: 'Disable visual effects',
+    skin: 'Skins',
+    darkMode: 'Switch to dark theme',
+    lightMode: 'Switch to light theme',
+    shortcuts: 'Keyboard shortcuts',
+    flashMode: 'Flash mode',
+    language: 'Language',
+  },
+  flash: {
+    exitHint: 'Click × or press ESC to exit',
+  },
+  shortcuts: {
+    space: 'Space',
+    playStop: 'Play/Stop',
+    bpmUpDown: 'BPM ±1',
+    bpmFive: '±5',
+  },
+  footer: {
+    hint: 'Space Play/Stop · ↑↓ Adjust BPM',
+  },
+  bpm: {
+    label: 'BPM',
+  },
+  timeSig: {
+    label: 'Time Sig',
+  },
+  subdivision: {
+    label: 'Subdivision',
+  },
+  subdivisions: {
+    quarter:     { label: '1/4',      name: 'Quarter',             desc: '1 note per beat' },
+    eighth:      { label: '1/8',      name: 'Eighth',              desc: '2 notes per beat, even' },
+    triplet:     { label: 'Trip',     name: 'Triplet',             desc: '3 notes per beat, even' },
+    sixteenth:   { label: '1/16',     name: 'Sixteenth',           desc: '4 notes per beat, even' },
+    dottedLong:  { label: 'Dot↗',     name: 'Dotted (long-short)', desc: 'Long-short 3:1, Shuffle' },
+    dottedShort: { label: 'Dot↘',     name: 'Dotted (short-long)', desc: 'Short-long 1:3' },
+    syncA:       { label: 'Syn A',    name: 'Syncopation A',       desc: 'Syncopation 2:2:1:1' },
+    syncB:       { label: 'Syn B',    name: 'Syncopation B',       desc: 'Syncopation 1:1:2:2' },
+    syncC:       { label: 'Syn C',    name: 'Syncopation C',       desc: 'Syncopation 2:1:1:2' },
+    triplet16A:  { label: '16³A',     name: '16th Triplet A',      desc: '16th triplet 3:1:1:1' },
+    triplet16B:  { label: '16³B',     name: '16th Triplet B',      desc: '16th triplet 1:1:1:3' },
+    quintuplet:  { label: 'Quin',     name: 'Quintuplet',          desc: '5 notes per beat, even' },
+  },
+  volume: {
+    label: 'Volume',
+  },
+  sound: {
+    normalLabel: 'Beat Sound',
+    normalDesc: 'Used for normal / weak beats',
+    accentLabel: 'Accent Sound',
+    accentDesc: 'Used for downbeat (accent)',
+    tok: 'Woody click, mechanical',
+    beep: 'Electronic beep, clean',
+    hihat: 'Hi-hat, high-freq noise',
+    kick: 'Bass drum, low-freq impact',
+    rim: 'Snare rimshot, crack',
+    woodblock: 'Woodblock, resonant',
+    clap: 'Hand clap, natural',
+    cowbell: 'Cowbell, 808 style',
+  },
+  accent: {
+    label: 'Accent',
+    mute: 'Off',
+    ghost: 'Low',
+    normal: 'Mid',
+    accent: 'Hi',
+  },
+  beat: {
+    beatN: 'Beat {n}',
+  },
+  trainer: {
+    label: 'Tempo Trainer',
+    startBpm: 'Start BPM',
+    targetBpm: 'Target BPM',
+    incrementBpm: 'BPM Step',
+    everyNBars: 'Every N Bars',
+  },
+  timer: {
+    label: 'Timer',
+    minutes: '{n} min',
+  },
+  skinPicker: {
+    appearanceMode: 'Appearance',
+    dark: 'Dark',
+    light: 'Light',
+    skinsLabel: 'Skins',
+  },
+  skins: {
+    default: 'Default',
+    ocean: 'Ocean',
+    forest: 'Forest',
+    minimal: 'Minimal',
+    pixel: 'Pixel',
+    classical: 'Classical',
+  },
+  presets: {
+    'standard-4-4': '4/4 Standard',
+    'waltz-3-4': '3/4 Waltz',
+    'six-eight': '6/8 Groove',
+    'take-five': '5/4 Take Five',
+    'balkan-7-8': '7/8 Balkan',
+    'swing-12-8': 'Swing 12/8',
+    'half-time': 'Half Time',
+    'double-time': 'Double Time',
+  },
+  logo: {
+    ariaLabel: 'Metronome',
+  },
+};

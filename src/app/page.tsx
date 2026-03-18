@@ -30,11 +30,16 @@ import {
   EyeOff,
   TrendingUp,
   Timer,
+  Languages,
 } from 'lucide-react';
 import { useSkin } from '@/hooks/useSkin';
 import SkinPicker from '@/components/metronome/SkinPicker';
+import { I18nProvider, useI18n, Locale } from '@/i18n';
 
 type HeaderPanel = 'trainer' | 'timer' | 'skin' | null;
+
+const LOCALE_CYCLE: Locale[] = ['zh', 'en', 'ja'];
+const LOCALE_LABELS: Record<Locale, string> = { zh: '中', en: 'EN', ja: 'JA' };
 
 /* ── Flash Mode overlay ── */
 function FlashModeOverlay({
@@ -52,6 +57,7 @@ function FlashModeOverlay({
   isPlaying: boolean;
   onClose: () => void;
 }) {
+  const { t } = useI18n();
   const isFlashing = isPlaying && flashBeat !== null;
   return (
     <div
@@ -119,15 +125,16 @@ function FlashModeOverlay({
           color: isFlashing ? 'rgba(255,255,255,0.5)' : 'var(--text-muted)',
         }}
       >
-        点击 × 或按 ESC 退出
+        {t.flash.exitHint}
       </div>
     </div>
   );
 }
 
-export default function Home() {
+function HomeContent() {
   const metronome = useMetronome();
   const { state } = metronome;
+  const { locale, setLocale, t } = useI18n();
 
   const [openPanel, setOpenPanel] = useState<HeaderPanel>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -146,6 +153,11 @@ export default function Home() {
     if (!visualMuteMounted.current) { visualMuteMounted.current = true; return; }
     localStorage.setItem('metronome-visual-mute', String(visualMute));
   }, [visualMute]);
+
+  // Update document title (moved from useMetronome to have access to i18n)
+  useEffect(() => {
+    document.title = t.meta.titleWithBpm.replace('{bpm}', String(state.bpm));
+  }, [state.bpm, t]);
 
   // Keyboard shortcuts
   useKeyboard({
@@ -194,6 +206,12 @@ export default function Home() {
   const visualFlashBeat = visualMute ? null : state.flashBeat;
   const visualIsPlaying = visualMute ? false : state.isPlaying;
 
+  // Language cycle handler
+  const cycleLocale = () => {
+    const idx = LOCALE_CYCLE.indexOf(locale);
+    setLocale(LOCALE_CYCLE[(idx + 1) % LOCALE_CYCLE.length]);
+  };
+
   return (
     <div
       className="min-h-screen flex flex-col relative"
@@ -239,7 +257,7 @@ export default function Home() {
             height="28"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            aria-label="节拍器"
+            aria-label={t.logo.ariaLabel}
           >
             {/* Metronome body — trapezoid */}
             <path
@@ -300,7 +318,7 @@ export default function Home() {
               color: (openPanel === 'trainer' || metronome.tempoTrainer.enabled) ? 'var(--accent-primary)' : 'var(--text-muted)',
               backgroundColor: (openPanel === 'trainer' || metronome.tempoTrainer.enabled) ? 'var(--accent-dim)' : 'transparent',
             }}
-            title="速度训练"
+            title={t.header.tempoTrainer}
           >
             <TrendingUp size={18} />
             {metronome.tempoTrainer.enabled && (
@@ -314,7 +332,7 @@ export default function Home() {
               color: (openPanel === 'timer' || metronome.timer.enabled) ? 'var(--accent-primary)' : 'var(--text-muted)',
               backgroundColor: (openPanel === 'timer' || metronome.timer.enabled) ? 'var(--accent-dim)' : 'transparent',
             }}
-            title="计时器"
+            title={t.header.timer}
           >
             <Timer size={18} />
             {metronome.timer.enabled && (
@@ -333,7 +351,7 @@ export default function Home() {
               color: visualMute ? 'var(--accent-primary)' : 'var(--text-muted)',
               backgroundColor: visualMute ? 'var(--accent-dim)' : 'transparent',
             }}
-            title={visualMute ? '开启视觉效果' : '关闭视觉效果'}
+            title={visualMute ? t.header.visualOn : t.header.visualOff}
           >
             {visualMute ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
@@ -344,7 +362,7 @@ export default function Home() {
               color: openPanel === 'skin' ? 'var(--accent-primary)' : 'var(--text-muted)',
               backgroundColor: openPanel === 'skin' ? 'var(--accent-dim)' : 'transparent',
             }}
-            title="皮肤"
+            title={t.header.skin}
           >
             <Palette size={18} />
           </button>
@@ -352,7 +370,7 @@ export default function Home() {
             onClick={toggleMode}
             className="p-2 rounded transition-colors"
             style={{ color: 'var(--text-muted)' }}
-            title={mode === 'light' ? '切换暗色主题' : '切换亮色主题'}
+            title={mode === 'light' ? t.header.darkMode : t.header.lightMode}
           >
             {mode === 'light' ? <Moon size={18} /> : <Sun size={18} />}
           </button>
@@ -363,9 +381,23 @@ export default function Home() {
               color: showShortcuts ? 'var(--accent-primary)' : 'var(--text-muted)',
               backgroundColor: showShortcuts ? 'var(--accent-dim)' : 'transparent',
             }}
-            title="键盘快捷键"
+            title={t.header.shortcuts}
           >
             <Keyboard size={18} />
+          </button>
+          <button
+            onClick={cycleLocale}
+            className="p-2 rounded transition-colors flex items-center gap-1"
+            style={{ color: 'var(--text-muted)' }}
+            title={t.header.language}
+          >
+            <Languages size={16} />
+            <span
+              className="text-[10px] leading-none"
+              style={{ fontFamily: 'var(--font-mono), monospace' }}
+            >
+              {LOCALE_LABELS[locale]}
+            </span>
           </button>
           <button
             onClick={() => setIsFlashMode(true)}
@@ -374,7 +406,7 @@ export default function Home() {
               color: isFlashMode ? 'var(--accent-primary)' : 'var(--text-muted)',
               backgroundColor: isFlashMode ? 'var(--accent-dim)' : 'transparent',
             }}
-            title="闪烁模式"
+            title={t.header.flashMode}
           >
             <Zap size={18} />
           </button>
@@ -436,13 +468,13 @@ export default function Home() {
         >
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <span>
-              <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-control)' }}>空格</kbd> 播放/停止
+              <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-control)' }}>{t.shortcuts.space}</kbd> {t.shortcuts.playStop}
             </span>
             <span>
-              <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-control)' }}>↑/↓</kbd> BPM ±1
+              <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-control)' }}>↑/↓</kbd> {t.shortcuts.bpmUpDown}
             </span>
             <span>
-              <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-control)' }}>Shift+↑/↓</kbd> ±5
+              <kbd className="px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-control)' }}>Shift+↑/↓</kbd> {t.shortcuts.bpmFive}
             </span>
           </div>
         </div>
@@ -625,7 +657,7 @@ export default function Home() {
                   color: 'var(--text-muted)',
                 }}
               >
-                音量
+                {t.volume.label}
               </label>
               <div className="flex items-center gap-2">
                 <button
@@ -669,8 +701,16 @@ export default function Home() {
           borderTop: '1px solid var(--border-subtle)',
         }}
       >
-        空格键 播放/停止 · ↑↓ 调整 BPM
+        {t.footer.hint}
       </footer>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <I18nProvider>
+      <HomeContent />
+    </I18nProvider>
   );
 }

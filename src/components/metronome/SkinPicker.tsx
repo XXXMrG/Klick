@@ -2,6 +2,7 @@
 
 import { skins } from '@/lib/skins/registry';
 import { Sun, Moon } from 'lucide-react';
+import { useI18n } from '@/i18n';
 
 interface SkinPickerProps {
   skinId: string;
@@ -16,6 +17,17 @@ export default function SkinPicker({
   onSkinChange,
   onToggleMode,
 }: SkinPickerProps) {
+  const { t } = useI18n();
+
+  const skinNames: Record<string, string> = {
+    default: t.skins.default,
+    ocean: t.skins.ocean,
+    forest: t.skins.forest,
+    minimal: t.skins.minimal,
+    pixel: t.skins.pixel,
+    classical: t.skins.classical,
+  };
+
   return (
     <div className="flex flex-col gap-3">
       {/* Mode toggle */}
@@ -27,7 +39,7 @@ export default function SkinPicker({
             color: 'var(--text-muted)',
           }}
         >
-          外观模式
+          {t.skinPicker.appearanceMode}
         </label>
         <button
           onClick={onToggleMode}
@@ -40,7 +52,7 @@ export default function SkinPicker({
           }}
         >
           {mode === 'light' ? <Moon size={12} /> : <Sun size={12} />}
-          {mode === 'light' ? '暗色' : '亮色'}
+          {mode === 'light' ? t.skinPicker.dark : t.skinPicker.light}
         </button>
       </div>
 
@@ -53,7 +65,7 @@ export default function SkinPicker({
             color: 'var(--text-muted)',
           }}
         >
-          皮肤
+          {t.skinPicker.skinsLabel}
         </label>
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
           {skins.map((skin) => {
@@ -98,7 +110,7 @@ export default function SkinPicker({
                       : 'var(--text-secondary)',
                   }}
                 >
-                  {skin.emoji} {skin.name}
+                  {skin.emoji} {skinNames[skin.id] ?? skin.name}
                 </span>
               </button>
             );

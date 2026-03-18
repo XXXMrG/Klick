@@ -1,18 +1,12 @@
 'use client';
 
 import { AccentLevel } from '@/types/metronome';
+import { useI18n } from '@/i18n';
 
 interface AccentEditorProps {
   accents: AccentLevel[];
   onToggleAccent: (index: number) => void;
 }
-
-const ACCENT_LABELS: Record<AccentLevel, string> = {
-  0: '静',   // Mute
-  1: '轻',   // Ghost
-  2: '普',   // Normal
-  3: '强',   // Accent
-};
 
 const ACCENT_COLORS: Record<AccentLevel, string> = {
   0: 'var(--text-muted)',
@@ -22,6 +16,15 @@ const ACCENT_COLORS: Record<AccentLevel, string> = {
 };
 
 export default function AccentEditor({ accents, onToggleAccent }: AccentEditorProps) {
+  const { t } = useI18n();
+
+  const accentLabels: Record<AccentLevel, string> = {
+    0: t.accent.mute,
+    1: t.accent.ghost,
+    2: t.accent.normal,
+    3: t.accent.accent,
+  };
+
   return (
     <div className="flex flex-col gap-2">
       <label
@@ -31,7 +34,7 @@ export default function AccentEditor({ accents, onToggleAccent }: AccentEditorPr
           color: 'var(--text-muted)',
         }}
       >
-        重音
+        {t.accent.label}
       </label>
       <div className="flex gap-2 flex-wrap">
         {accents.map((accent, i) => (
@@ -61,7 +64,7 @@ export default function AccentEditor({ accents, onToggleAccent }: AccentEditorPr
                 color: ACCENT_COLORS[accent],
               }}
             >
-              {ACCENT_LABELS[accent]}
+              {accentLabels[accent]}
             </span>
           </button>
         ))}

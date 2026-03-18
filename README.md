@@ -25,7 +25,7 @@ Most online metronomes feel like toys — laggy clicks, no subdivisions, no acce
 
 **Rhythm**
 - Any time signature (2/4, 3/4, 4/4, 5/4, 7/8, ...)
-- 11 subdivision patterns — quarter, eighth, triplet, sixteenth, dotted, syncopated, and more
+- 12 subdivision patterns — quarter, eighth, triplet, sixteenth, dotted, syncopated, quintuplet, and more
 - Per-beat accent editor — cycle through accent / normal / ghost / mute per beat
 
 **Sound**
@@ -37,8 +37,16 @@ Most online metronomes feel like toys — laggy clicks, no subdivisions, no acce
 - Timer — countdown practice sessions, auto-stops when time is up
 - Flash Mode — full-screen visual pulse, great for stage or distance viewing
 
-**Quality of Life**
+**Themes & Skins**
 - Dark / Light theme
+- 6 skins — Default, Ocean, Forest, Minimal, Pixel (retro 8-bit), Classical (concert-hall)
+- Each skin provides unique colors, fonts, and decorative elements
+
+**Internationalization**
+- 3 languages — Chinese, English, Japanese
+- One-click language switching in the header, preference saved across sessions
+
+**Quality of Life**
 - Visual mute — turn off all beat animations while keeping audio
 - Keyboard shortcuts (Space, arrows, Esc)
 - Wake Lock — screen stays on while playing (mobile)
@@ -84,9 +92,11 @@ src/
 ├── app/              # Next.js app entry, layout, global styles
 ├── components/
 │   └── metronome/    # UI: BpmDisplay, BeatVisualizer, TransportBar, ...
-├── hooks/            # useMetronome, useTapBpm, useKeyboard, usePresets
+├── hooks/            # useMetronome, useTapBpm, useKeyboard, useSkin, ...
+├── i18n/             # Internationalization — translations (zh/en/ja), context
 ├── lib/
-│   └── audio/        # AudioEngine, lookahead scheduler, sound definitions
+│   ├── audio/        # AudioEngine, lookahead scheduler, sound definitions
+│   └── skins/        # Skin definitions, registry, theme variables
 └── types/            # Shared TypeScript types
 ```
 

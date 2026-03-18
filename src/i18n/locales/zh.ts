@@ -1,0 +1,120 @@
+import { TranslationKeys } from '../types';
+
+export const zh: TranslationKeys = {
+  meta: {
+    title: '节拍器',
+    titleWithBpm: '{bpm} BPM | 节拍器',
+  },
+  header: {
+    tempoTrainer: '速度训练',
+    timer: '计时器',
+    visualOn: '开启视觉效果',
+    visualOff: '关闭视觉效果',
+    skin: '皮肤',
+    darkMode: '切换暗色主题',
+    lightMode: '切换亮色主题',
+    shortcuts: '键盘快捷键',
+    flashMode: '闪烁模式',
+    language: '语言',
+  },
+  flash: {
+    exitHint: '点击 × 或按 ESC 退出',
+  },
+  shortcuts: {
+    space: '空格',
+    playStop: '播放/停止',
+    bpmUpDown: 'BPM ±1',
+    bpmFive: '±5',
+  },
+  footer: {
+    hint: '空格键 播放/停止 · ↑↓ 调整 BPM',
+  },
+  bpm: {
+    label: 'BPM',
+  },
+  timeSig: {
+    label: '拍号',
+  },
+  subdivision: {
+    label: '细分',
+  },
+  subdivisions: {
+    quarter:     { label: '四分',     name: 'Quarter',             desc: '每拍 1 下' },
+    eighth:      { label: '八分',     name: 'Eighth',              desc: '每拍 2 下，等分' },
+    triplet:     { label: '三连音',   name: 'Triplet',             desc: '每拍 3 下，等分' },
+    sixteenth:   { label: '十六分',   name: 'Sixteenth',           desc: '每拍 4 下，等分' },
+    dottedLong:  { label: '附点↗',    name: 'Dotted (long-short)', desc: '前长后短 3:1，Shuffle' },
+    dottedShort: { label: '附点↘',    name: 'Dotted (short-long)', desc: '前短后长 1:3' },
+    syncA:       { label: '切分 A',   name: 'Syncopation A',       desc: '切分节奏 2:2:1:1' },
+    syncB:       { label: '切分 B',   name: 'Syncopation B',       desc: '切分节奏 1:1:2:2' },
+    syncC:       { label: '切分 C',   name: 'Syncopation C',       desc: '切分节奏 2:1:1:2' },
+    triplet16A:  { label: '16分³A',   name: '16th Triplet A',      desc: '十六分三连音 3:1:1:1' },
+    triplet16B:  { label: '16分³B',   name: '16th Triplet B',      desc: '十六分三连音 1:1:1:3' },
+    quintuplet:  { label: '五连音',   name: 'Quintuplet',          desc: '每拍 5 下，等分' },
+  },
+  volume: {
+    label: '音量',
+  },
+  sound: {
+    normalLabel: '节拍音色',
+    normalDesc: '普通拍 / 弱拍使用',
+    accentLabel: '强拍音色',
+    accentDesc: '第一拍（重音）使用',
+    tok: '木质清脆，类机械摆',
+    beep: '电子哔声，干净',
+    hihat: '踩镲，高频噪声',
+    kick: '底鼓，低频冲击',
+    rim: '军鼓边击，crack',
+    woodblock: '木鱼，共鸣感',
+    clap: '拍手，自然感',
+    cowbell: '牛铃，808 风格',
+  },
+  accent: {
+    label: '重音',
+    mute: '静',
+    ghost: '轻',
+    normal: '普',
+    accent: '强',
+  },
+  beat: {
+    beatN: '第 {n} 拍',
+  },
+  trainer: {
+    label: '速度训练',
+    startBpm: '起始 BPM',
+    targetBpm: '目标 BPM',
+    incrementBpm: '每次增减 BPM',
+    everyNBars: '每 N 小节',
+  },
+  timer: {
+    label: '计时器',
+    minutes: '{n}分钟',
+  },
+  skinPicker: {
+    appearanceMode: '外观模式',
+    dark: '暗色',
+    light: '亮色',
+    skinsLabel: '皮肤',
+  },
+  skins: {
+    default: '默认',
+    ocean: '海洋',
+    forest: '森林',
+    minimal: '极简',
+    pixel: '像素',
+    classical: '古典',
+  },
+  presets: {
+    'standard-4-4': '4/4 标准',
+    'waltz-3-4': '3/4 华尔兹',
+    'six-eight': '6/8 节奏',
+    'take-five': '5/4 Take Five',
+    'balkan-7-8': '7/8 巴尔干',
+    'swing-12-8': 'Swing 12/8',
+    'half-time': '半速',
+    'double-time': '双倍速',
+  },
+  logo: {
+    ariaLabel: '节拍器',
+  },
+};

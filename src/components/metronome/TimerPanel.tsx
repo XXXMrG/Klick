@@ -2,6 +2,7 @@
 
 import { TimerConfig } from '@/types/metronome';
 import { Timer } from 'lucide-react';
+import { useI18n } from '@/i18n';
 
 interface TimerPanelProps {
   config: TimerConfig;
@@ -11,6 +12,8 @@ interface TimerPanelProps {
 const DURATION_PRESETS = [5, 10, 15, 20, 30, 60];
 
 export default function TimerPanel({ config, onChange }: TimerPanelProps) {
+  const { t } = useI18n();
+
   const toggleEnabled = () => {
     onChange({
       ...config,
@@ -48,7 +51,7 @@ export default function TimerPanel({ config, onChange }: TimerPanelProps) {
             color: config.enabled ? 'var(--accent-primary)' : 'var(--text-muted)',
           }}
         >
-          计时器
+          {t.timer.label}
         </span>
         <div
           className="ml-auto w-8 h-4 rounded-full relative transition-colors"
@@ -90,7 +93,7 @@ export default function TimerPanel({ config, onChange }: TimerPanelProps) {
                       : 'var(--text-secondary)',
                 }}
               >
-                {d}分钟
+                {t.timer.minutes.replace('{n}', String(d))}
               </button>
             ))}
           </div>

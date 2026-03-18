@@ -1,6 +1,7 @@
 'use client';
 
 import { AccentLevel } from '@/types/metronome';
+import { useI18n } from '@/i18n';
 
 interface BeatVisualizerProps {
   beatsPerBar: number;
@@ -19,6 +20,7 @@ export default function BeatVisualizer({
   visualMute = false,
   onToggleAccent,
 }: BeatVisualizerProps) {
+  const { t } = useI18n();
   return (
     <div className="flex items-center justify-center gap-3 sm:gap-4 flex-wrap" style={{ minHeight: 48 }}>
       {Array.from({ length: beatsPerBar }, (_, i) => {
@@ -63,7 +65,7 @@ export default function BeatVisualizer({
                   : '0 0 10px var(--beat-flash)'
                 : 'none',
             }}
-            title={`第 ${i + 1} 拍`}
+            title={t.beat.beatN.replace('{n}', String(i + 1))}
           >
             <span
               className="text-[10px] sm:text-xs font-bold select-none"

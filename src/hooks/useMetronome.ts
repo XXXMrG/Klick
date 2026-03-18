@@ -235,11 +235,6 @@ export function useMetronome() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timer.enabled, state.isPlaying]);
 
-  // Update document title
-  useEffect(() => {
-    document.title = `${state.bpm} BPM | 节拍器`;
-  }, [state.bpm]);
-
   const syncScheduler = useCallback(
     (overrides?: Partial<MetronomeState>) => {
       const scheduler = getScheduler();

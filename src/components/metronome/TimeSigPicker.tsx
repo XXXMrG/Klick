@@ -1,5 +1,7 @@
 'use client';
 
+import { useI18n } from '@/i18n';
+
 interface TimeSigPickerProps {
   beatsPerBar: number;
   beatUnit: 4 | 8;
@@ -13,6 +15,7 @@ export default function TimeSigPicker({
   onBeatsChange,
   onBeatUnitChange,
 }: TimeSigPickerProps) {
+  const { t } = useI18n();
   return (
     <div className="flex flex-col gap-2">
       <label
@@ -22,7 +25,7 @@ export default function TimeSigPicker({
           color: 'var(--text-muted)',
         }}
       >
-        拍号
+        {t.timeSig.label}
       </label>
       <div className="flex items-center gap-3">
         {/* Beats per bar selector */}

@@ -44,13 +44,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="zh-CN" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 try {
+                  var l = localStorage.getItem('metronome-locale');
+                  if (l === 'en' || l === 'ja') {
+                    document.documentElement.lang = l;
+                  } else {
+                    document.documentElement.lang = 'zh-CN';
+                  }
                   var t = localStorage.getItem('metronome-theme');
                   if (t === 'light' || t === 'dark') {
                     document.documentElement.setAttribute('data-theme', t);
@@ -83,6 +89,7 @@ export default function RootLayout({
       </head>
       <body
         className={`${bebasNeue.variable} ${jetBrainsMono.variable} ${dmSans.variable} antialiased`}
+        suppressHydrationWarning
       >
         {/* Restore skin font overrides on <body> inline style to beat Next.js class specificity */}
         <script

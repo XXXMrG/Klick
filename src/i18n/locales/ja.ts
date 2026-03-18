@@ -1,0 +1,120 @@
+import { TranslationKeys } from '../types';
+
+export const ja: TranslationKeys = {
+  meta: {
+    title: 'メトロノーム',
+    titleWithBpm: '{bpm} BPM | メトロノーム',
+  },
+  header: {
+    tempoTrainer: 'テンポ練習',
+    timer: 'タイマー',
+    visualOn: '視覚効果オン',
+    visualOff: '視覚効果オフ',
+    skin: 'スキン',
+    darkMode: 'ダークモードへ',
+    lightMode: 'ライトモードへ',
+    shortcuts: 'ショートカット',
+    flashMode: 'フラッシュモード',
+    language: '言語',
+  },
+  flash: {
+    exitHint: '× をクリック、または ESC で終了',
+  },
+  shortcuts: {
+    space: 'Space',
+    playStop: '再生/停止',
+    bpmUpDown: 'BPM ±1',
+    bpmFive: '±5',
+  },
+  footer: {
+    hint: 'Space 再生/停止 · ↑↓ BPM 調整',
+  },
+  bpm: {
+    label: 'BPM',
+  },
+  timeSig: {
+    label: '拍子',
+  },
+  subdivision: {
+    label: '細分',
+  },
+  subdivisions: {
+    quarter:     { label: '4分',      name: 'Quarter',             desc: '1拍に1打' },
+    eighth:      { label: '8分',      name: 'Eighth',              desc: '1拍に2打、均等' },
+    triplet:     { label: '3連',      name: 'Triplet',             desc: '1拍に3打、均等' },
+    sixteenth:   { label: '16分',     name: 'Sixteenth',           desc: '1拍に4打、均等' },
+    dottedLong:  { label: '付点↗',    name: 'Dotted (long-short)', desc: '長短 3:1、シャッフル' },
+    dottedShort: { label: '付点↘',    name: 'Dotted (short-long)', desc: '短長 1:3' },
+    syncA:       { label: 'シンコA',  name: 'Syncopation A',       desc: 'シンコペ 2:2:1:1' },
+    syncB:       { label: 'シンコB',  name: 'Syncopation B',       desc: 'シンコペ 1:1:2:2' },
+    syncC:       { label: 'シンコC',  name: 'Syncopation C',       desc: 'シンコペ 2:1:1:2' },
+    triplet16A:  { label: '16³A',     name: '16th Triplet A',      desc: '16分3連 3:1:1:1' },
+    triplet16B:  { label: '16³B',     name: '16th Triplet B',      desc: '16分3連 1:1:1:3' },
+    quintuplet:  { label: '5連',      name: 'Quintuplet',          desc: '1拍に5打、均等' },
+  },
+  volume: {
+    label: '音量',
+  },
+  sound: {
+    normalLabel: 'ビート音',
+    normalDesc: '通常拍 / 弱拍に使用',
+    accentLabel: 'アクセント音',
+    accentDesc: '1拍目（強拍）に使用',
+    tok: 'ウッドクリック、機械式',
+    beep: '電子ビープ、クリーン',
+    hihat: 'ハイハット、高周波',
+    kick: 'キック、低周波',
+    rim: 'リムショット、クラック',
+    woodblock: 'ウッドブロック、共鳴',
+    clap: 'クラップ、ナチュラル',
+    cowbell: 'カウベル、808系',
+  },
+  accent: {
+    label: 'アクセント',
+    mute: '消',
+    ghost: '弱',
+    normal: '中',
+    accent: '強',
+  },
+  beat: {
+    beatN: '第{n}拍',
+  },
+  trainer: {
+    label: 'テンポ練習',
+    startBpm: '開始 BPM',
+    targetBpm: '目標 BPM',
+    incrementBpm: '増減 BPM',
+    everyNBars: 'N小節ごと',
+  },
+  timer: {
+    label: 'タイマー',
+    minutes: '{n}分',
+  },
+  skinPicker: {
+    appearanceMode: '外観モード',
+    dark: 'ダーク',
+    light: 'ライト',
+    skinsLabel: 'スキン',
+  },
+  skins: {
+    default: 'デフォルト',
+    ocean: 'オーシャン',
+    forest: 'フォレスト',
+    minimal: 'ミニマル',
+    pixel: 'ピクセル',
+    classical: 'クラシカル',
+  },
+  presets: {
+    'standard-4-4': '4/4 スタンダード',
+    'waltz-3-4': '3/4 ワルツ',
+    'six-eight': '6/8 リズム',
+    'take-five': '5/4 Take Five',
+    'balkan-7-8': '7/8 バルカン',
+    'swing-12-8': 'Swing 12/8',
+    'half-time': 'ハーフタイム',
+    'double-time': 'ダブルタイム',
+  },
+  logo: {
+    ariaLabel: 'メトロノーム',
+  },
+};

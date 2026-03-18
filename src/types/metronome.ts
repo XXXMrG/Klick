@@ -39,28 +39,6 @@ export const SUBDIVISION_CONFIGS: Record<SubdivisionType, SubdivisionConfig> = {
   "quintuplet":   { type: "quintuplet",   notesPerBeat: 5, intervals: [0.2, 0.2, 0.2, 0.2, 0.2] },
 };
 
-export interface SubdivisionOption {
-  type: SubdivisionType;
-  label: string;         // Chinese display name
-  englishName: string;   // English name (for tooltip)
-  description: string;   // description for tooltip
-}
-
-export const SUBDIVISIONS: SubdivisionOption[] = [
-  { type: "quarter",      label: "四分",     englishName: "Quarter",              description: "每拍 1 下" },
-  { type: "eighth",       label: "八分",     englishName: "Eighth",               description: "每拍 2 下，等分" },
-  { type: "triplet",      label: "三连音",   englishName: "Triplet",              description: "每拍 3 下，等分" },
-  { type: "sixteenth",    label: "十六分",   englishName: "Sixteenth",            description: "每拍 4 下，等分" },
-  { type: "dotted-long",  label: "附点↗",    englishName: "Dotted (long-short)",  description: "前长后短 3:1，Shuffle" },
-  { type: "dotted-short", label: "附点↘",    englishName: "Dotted (short-long)",  description: "前短后长 1:3" },
-  { type: "sync-a",       label: "切分 A",   englishName: "Syncopation A",        description: "切分节奏 2:2:1:1" },
-  { type: "sync-b",       label: "切分 B",   englishName: "Syncopation B",        description: "切分节奏 1:1:2:2" },
-  { type: "sync-c",       label: "切分 C",   englishName: "Syncopation C",        description: "切分节奏 2:1:1:2" },
-  { type: "triplet16-a",  label: "16分³A",   englishName: "16th Triplet A",       description: "十六分三连音 3:1:1:1" },
-  { type: "triplet16-b",  label: "16分³B",   englishName: "16th Triplet B",       description: "十六分三连音 1:1:1:3" },
-  { type: "quintuplet",   label: "五连音",   englishName: "Quintuplet",           description: "每拍 5 下，等分" },
-];
-
 export interface MetronomeState {
   bpm: number;
   beatsPerBar: number;
@@ -127,12 +105,12 @@ export const TEMPO_MARKINGS: { max: number; name: string }[] = [
 ];
 
 export const BUILT_IN_PRESETS: Preset[] = [
-  { id: 'standard-4-4', name: '4/4 标准', bpm: 120, beatsPerBar: 4, beatUnit: 4, subdivision: 'quarter', accents: [3, 2, 2, 2], sound: 'tok', isBuiltIn: true },
-  { id: 'waltz-3-4', name: '3/4 华尔兹', bpm: 160, beatsPerBar: 3, beatUnit: 4, subdivision: 'quarter', accents: [3, 2, 2], sound: 'tok', isBuiltIn: true },
-  { id: 'six-eight', name: '6/8 节奏', bpm: 120, beatsPerBar: 6, beatUnit: 8, subdivision: 'quarter', accents: [3, 2, 2, 3, 2, 2], sound: 'tok', isBuiltIn: true },
-  { id: 'take-five', name: '5/4 Take Five', bpm: 174, beatsPerBar: 5, beatUnit: 4, subdivision: 'quarter', accents: [3, 2, 3, 2, 2], sound: 'tok', isBuiltIn: true },
-  { id: 'balkan-7-8', name: '7/8 巴尔干', bpm: 120, beatsPerBar: 7, beatUnit: 8, subdivision: 'quarter', accents: [3, 2, 3, 2, 3, 2, 2], sound: 'tok', isBuiltIn: true },
-  { id: 'swing-12-8', name: 'Swing 12/8', bpm: 120, beatsPerBar: 4, beatUnit: 4, subdivision: 'triplet', accents: [3, 2, 2, 2], sound: 'tok', isBuiltIn: true },
-  { id: 'half-time', name: '半速', bpm: 60, beatsPerBar: 4, beatUnit: 4, subdivision: 'eighth', accents: [3, 2, 2, 2], sound: 'tok', isBuiltIn: true },
-  { id: 'double-time', name: '双倍速', bpm: 200, beatsPerBar: 4, beatUnit: 4, subdivision: 'quarter', accents: [3, 2, 2, 2], sound: 'tok', isBuiltIn: true },
+  { id: 'standard-4-4', name: 'standard-4-4', bpm: 120, beatsPerBar: 4, beatUnit: 4, subdivision: 'quarter', accents: [3, 2, 2, 2], sound: 'tok', isBuiltIn: true },
+  { id: 'waltz-3-4', name: 'waltz-3-4', bpm: 160, beatsPerBar: 3, beatUnit: 4, subdivision: 'quarter', accents: [3, 2, 2], sound: 'tok', isBuiltIn: true },
+  { id: 'six-eight', name: 'six-eight', bpm: 120, beatsPerBar: 6, beatUnit: 8, subdivision: 'quarter', accents: [3, 2, 2, 3, 2, 2], sound: 'tok', isBuiltIn: true },
+  { id: 'take-five', name: 'take-five', bpm: 174, beatsPerBar: 5, beatUnit: 4, subdivision: 'quarter', accents: [3, 2, 3, 2, 2], sound: 'tok', isBuiltIn: true },
+  { id: 'balkan-7-8', name: 'balkan-7-8', bpm: 120, beatsPerBar: 7, beatUnit: 8, subdivision: 'quarter', accents: [3, 2, 3, 2, 3, 2, 2], sound: 'tok', isBuiltIn: true },
+  { id: 'swing-12-8', name: 'swing-12-8', bpm: 120, beatsPerBar: 4, beatUnit: 4, subdivision: 'triplet', accents: [3, 2, 2, 2], sound: 'tok', isBuiltIn: true },
+  { id: 'half-time', name: 'half-time', bpm: 60, beatsPerBar: 4, beatUnit: 4, subdivision: 'eighth', accents: [3, 2, 2, 2], sound: 'tok', isBuiltIn: true },
+  { id: 'double-time', name: 'double-time', bpm: 200, beatsPerBar: 4, beatUnit: 4, subdivision: 'quarter', accents: [3, 2, 2, 2], sound: 'tok', isBuiltIn: true },
 ];

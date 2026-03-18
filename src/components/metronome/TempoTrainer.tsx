@@ -2,6 +2,7 @@
 
 import { TempoTrainerConfig } from '@/types/metronome';
 import { TrendingUp } from 'lucide-react';
+import { useI18n } from '@/i18n';
 
 interface TempoTrainerProps {
   config: TempoTrainerConfig;
@@ -10,6 +11,8 @@ interface TempoTrainerProps {
 }
 
 export default function TempoTrainer({ config, currentBpm, onChange }: TempoTrainerProps) {
+  const { t } = useI18n();
+
   const toggleEnabled = () => {
     onChange({ ...config, enabled: !config.enabled });
   };
@@ -37,7 +40,7 @@ export default function TempoTrainer({ config, currentBpm, onChange }: TempoTrai
             color: config.enabled ? 'var(--accent-primary)' : 'var(--text-muted)',
           }}
         >
-          速度训练
+          {t.trainer.label}
         </span>
         <div
           className="ml-auto w-8 h-4 rounded-full relative transition-colors"
@@ -65,7 +68,7 @@ export default function TempoTrainer({ config, currentBpm, onChange }: TempoTrai
                   color: 'var(--text-muted)',
                 }}
               >
-                起始 BPM
+                {t.trainer.startBpm}
               </label>
               <input
                 type="number"
@@ -91,7 +94,7 @@ export default function TempoTrainer({ config, currentBpm, onChange }: TempoTrai
                   color: 'var(--text-muted)',
                 }}
               >
-                目标 BPM
+                {t.trainer.targetBpm}
               </label>
               <input
                 type="number"
@@ -119,7 +122,7 @@ export default function TempoTrainer({ config, currentBpm, onChange }: TempoTrai
                   color: 'var(--text-muted)',
                 }}
               >
-                每次增减 BPM
+                {t.trainer.incrementBpm}
               </label>
               <input
                 type="number"
@@ -145,7 +148,7 @@ export default function TempoTrainer({ config, currentBpm, onChange }: TempoTrai
                   color: 'var(--text-muted)',
                 }}
               >
-                每 N 小节
+                {t.trainer.everyNBars}
               </label>
               <input
                 type="number"
