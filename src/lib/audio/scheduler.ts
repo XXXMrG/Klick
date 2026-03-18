@@ -26,6 +26,8 @@ export class MetronomeScheduler {
   private _accents: AccentLevel[] = [3, 2, 2, 2];
   private _volume: number = 1.0;
   private _isPlaying: boolean = false;
+  private _randomMuteChance: number = 0;
+  private _randomMuteMap: Map<number, boolean> = new Map();
 
   get isPlaying() { return this._isPlaying; }
   get bpm() { return this._bpm; }
@@ -46,6 +48,7 @@ export class MetronomeScheduler {
   setAccentSound(sound: SoundType) { this._accentSound = sound; }
   setAccents(accents: AccentLevel[]) { this._accents = accents; }
   setVolume(vol: number) { this._volume = vol; }
+  setRandomMuteChance(chance: number) { this._randomMuteChance = chance; }
   setOnBeat(cb: BeatCallback) { this.onBeat = cb; }
 
   private ensureAudioContext(): AudioContext {
@@ -100,6 +103,13 @@ export class MetronomeScheduler {
     const isSubdivision = subBeat > 0;
     const accentLevel = this._accents[beat] ?? 2;
 
+    // Random mute: decide once per beat (on subBeat 0), apply to all sub-beats
+    if (subBeat === 0) {
+      const muted = this._randomMuteChance > 0 && Math.random() < this._randomMuteChance;
+      this._randomMuteMap.set(beat, muted);
+    }
+    const randomMuted = this._randomMuteMap.get(beat) ?? false;
+
     // Determine volume based on accent level and whether it's a subdivision
     // Multiply by 2 for a louder default output
     let noteVolume = this._volume * 2;
@@ -118,6 +128,11 @@ export class MetronomeScheduler {
         break;
     }
 
+    // Apply random mute — silence this beat entirely
+    if (randomMuted) {
+      noteVolume = 0;
+    }
+
     if (noteVolume > 0) {
       const isAccent = accentLevel === 3 && !isSubdivision;
       const sound = isAccent ? this._accentSound : this._sound;
@@ -125,7 +140,7 @@ export class MetronomeScheduler {
     }
 
     // Push to UI queue
-    this.uiQueue.push({ beat, subBeat, time, isDownbeat, isSubdivision });
+    this.uiQueue.push({ beat, subBeat, time, isDownbeat, isSubdivision, randomMuted });
   }
 
   private advance() {

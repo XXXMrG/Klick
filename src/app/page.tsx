@@ -16,6 +16,7 @@ import AccentEditor from '@/components/metronome/AccentEditor';
 import PulseBar from '@/components/metronome/PulseBar';
 import TempoTrainer from '@/components/metronome/TempoTrainer';
 import TimerPanel from '@/components/metronome/TimerPanel';
+import RandomMutePanel from '@/components/metronome/RandomMutePanel';
 
 import {
   Zap,
@@ -32,12 +33,13 @@ import {
   Timer,
   Languages,
   MoreHorizontal,
+  Dices,
 } from 'lucide-react';
 import { useSkin } from '@/hooks/useSkin';
 import SkinPicker from '@/components/metronome/SkinPicker';
 import { I18nProvider, useI18n, Locale } from '@/i18n';
 
-type HeaderPanel = 'trainer' | 'timer' | 'skin' | null;
+type HeaderPanel = 'trainer' | 'timer' | 'skin' | 'randomMute' | null;
 
 const LOCALE_CYCLE: Locale[] = ['zh', 'en', 'ja'];
 const LOCALE_LABELS: Record<Locale, string> = { zh: '中', en: 'EN', ja: 'JA' };
@@ -382,6 +384,20 @@ function HomeContent() {
           >
             <Zap size={18} />
           </button>
+          <button
+            onClick={() => setOpenPanel(p => p === 'randomMute' ? null : 'randomMute')}
+            className="p-2 rounded transition-colors relative"
+            style={{
+              color: (openPanel === 'randomMute' || metronome.randomMute.enabled) ? 'var(--accent-primary)' : 'var(--text-muted)',
+              backgroundColor: (openPanel === 'randomMute' || metronome.randomMute.enabled) ? 'var(--accent-dim)' : 'transparent',
+            }}
+            title={t.header.randomMute}
+          >
+            <Dices size={18} />
+            {metronome.randomMute.enabled && (
+              <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--accent-primary)' }} />
+            )}
+          </button>
 
           {/* Secondary icons — hidden on mobile, inline on sm+ */}
           <button
@@ -529,6 +545,12 @@ function HomeContent() {
                   onToggleMode={toggleMode}
                 />
               )}
+              {openPanel === 'randomMute' && (
+                <RandomMutePanel
+                  config={metronome.randomMute}
+                  onChange={metronome.setRandomMute}
+                />
+              )}
             </div>
           </>
         )}
@@ -587,24 +609,14 @@ function HomeContent() {
         </div>
 
         {/* BPM slider */}
-        <div className="w-full max-w-sm flex items-center gap-3 px-2">
-          <button
-            onClick={() => metronome.setBpm(state.bpm - 1)}
-            className="w-7 h-7 flex items-center justify-center rounded transition-all active:scale-95 flex-shrink-0"
-            style={{
-              backgroundColor: 'var(--bg-control)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-secondary)',
-              fontSize: '16px',
-            }}
-          >−</button>
+        <div className="w-full max-w-sm px-2">
           <input
             type="range"
             min="1"
             max="300"
             value={state.bpm}
             onChange={(e) => metronome.setBpm(parseInt(e.target.value))}
-            className="flex-1 h-2 rounded-full appearance-none cursor-pointer"
+            className="w-full h-2 rounded-full appearance-none cursor-pointer"
             style={{
               background: `linear-gradient(to right, var(--accent-primary) 0%, var(--accent-primary) ${
                 ((state.bpm - 1) / 299) * 100
@@ -612,16 +624,6 @@ function HomeContent() {
               accentColor: 'var(--accent-primary)',
             }}
           />
-          <button
-            onClick={() => metronome.setBpm(state.bpm + 1)}
-            className="w-7 h-7 flex items-center justify-center rounded transition-all active:scale-95 flex-shrink-0"
-            style={{
-              backgroundColor: 'var(--bg-control)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-secondary)',
-              fontSize: '16px',
-            }}
-          >+</button>
         </div>
 
         {/* Transport: Play/Stop */}

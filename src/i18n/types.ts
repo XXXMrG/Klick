@@ -17,6 +17,7 @@ export interface TranslationKeys {
     flashMode: string;
     language: string;
     more: string;
+    randomMute: string;
   };
   flash: {
     exitHint: string;
@@ -114,6 +115,14 @@ export interface TranslationKeys {
     'swing-12-8': string;
     'half-time': string;
     'double-time': string;
+  };
+  randomMute: {
+    label: string;
+    desc: string;
+    low: string;
+    medium: string;
+    high: string;
+    veryHigh: string;
   };
   logo: {
     ariaLabel: string;

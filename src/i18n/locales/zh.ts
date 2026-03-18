@@ -17,6 +17,7 @@ export const zh: TranslationKeys = {
     flashMode: '闪烁模式',
     language: '语言',
     more: '更多',
+    randomMute: '随机静音',
   },
   flash: {
     exitHint: '点击 × 或按 ESC 退出',
@@ -114,6 +115,14 @@ export const zh: TranslationKeys = {
     'swing-12-8': 'Swing 12/8',
     'half-time': '半速',
     'double-time': '双倍速',
+  },
+  randomMute: {
+    label: '随机静音',
+    desc: '随机静音某些拍子，锻炼内心节拍稳定性',
+    low: '低 20%',
+    medium: '中 35%',
+    high: '高 50%',
+    veryHigh: '极高 70%',
   },
   logo: {
     ariaLabel: '节拍器',

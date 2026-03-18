@@ -17,6 +17,7 @@ export const ja: TranslationKeys = {
     flashMode: 'フラッシュモード',
     language: '言語',
     more: 'その他',
+    randomMute: 'ランダムミュート',
   },
   flash: {
     exitHint: '× をクリック、または ESC で終了',
@@ -114,6 +115,14 @@ export const ja: TranslationKeys = {
     'swing-12-8': 'Swing 12/8',
     'half-time': 'ハーフタイム',
     'double-time': 'ダブルタイム',
+  },
+  randomMute: {
+    label: 'ランダムミュート',
+    desc: 'ランダムにビートを消音し、内なるリズム感を鍛えます',
+    low: '低 20%',
+    medium: '中 35%',
+    high: '高 50%',
+    veryHigh: '最高 70%',
   },
   logo: {
     ariaLabel: 'メトロノーム',

@@ -80,12 +80,18 @@ export interface TimerConfig {
   remainingSeconds: number;
 }
 
+export interface RandomMuteConfig {
+  enabled: boolean;
+  chance: number; // 0-1, probability of muting each beat
+}
+
 export interface BeatEvent {
   beat: number;
   subBeat: number;
   time: number;
   isDownbeat: boolean;
   isSubdivision: boolean;
+  randomMuted: boolean;
 }
 
 export const TEMPO_MARKINGS: { max: number; name: string }[] = [

@@ -9,6 +9,7 @@ import {
   AccentLevel,
   TempoTrainerConfig,
   TimerConfig,
+  RandomMuteConfig,
 } from '@/types/metronome';
 import { clampBpm } from '@/lib/tempo';
 
@@ -39,6 +40,7 @@ const VALID_SUBDIVISIONS: SubdivisionType[] = [
 function loadSettings(): Partial<MetronomeState> & {
   tempoTrainer?: Partial<TempoTrainerConfig>;
   timer?: Partial<TimerConfig>;
+  randomMute?: Partial<RandomMuteConfig>;
 } {
   if (typeof window === 'undefined') return {};
   try {
@@ -60,6 +62,7 @@ function saveSettings(
   state: MetronomeState,
   tempoTrainer: TempoTrainerConfig,
   timer: TimerConfig,
+  randomMute: RandomMuteConfig,
 ) {
   if (typeof window === 'undefined') return;
   try {
@@ -82,6 +85,10 @@ function saveSettings(
       timer: {
         enabled: timer.enabled,
         durationMinutes: timer.durationMinutes,
+      },
+      randomMute: {
+        enabled: randomMute.enabled,
+        chance: randomMute.chance,
       },
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
@@ -111,6 +118,12 @@ export function useMetronome() {
     durationMinutes: 5,
     remainingSeconds: 300,
   });
+
+  // Random mute state
+  const [randomMute, setRandomMute] = useState<RandomMuteConfig>({
+    enabled: false,
+    chance: 0.3,
+  });
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const getScheduler = useCallback(() => {
@@ -124,7 +137,7 @@ export function useMetronome() {
   useEffect(() => {
     const saved = loadSettings();
     if (Object.keys(saved).length > 0) {
-      const { tempoTrainer: savedTrainer, timer: savedTimer, ...savedState } = saved;
+      const { tempoTrainer: savedTrainer, timer: savedTimer, randomMute: savedRandomMute, ...savedState } = saved;
       setState(prev => ({ ...prev, ...savedState }));
       if (savedTrainer) {
         setTempoTrainer(prev => ({ ...prev, ...savedTrainer }));
@@ -135,6 +148,9 @@ export function useMetronome() {
           ...savedTimer,
           remainingSeconds: (savedTimer.durationMinutes ?? prev.durationMinutes) * 60,
         }));
+      }
+      if (savedRandomMute) {
+        setRandomMute(prev => ({ ...prev, ...savedRandomMute }));
       }
       const scheduler = schedulerRef.current;
       if (scheduler) {
@@ -153,8 +169,8 @@ export function useMetronome() {
   // Auto-save settings to localStorage — only after hydration to avoid overwriting saved data
   useEffect(() => {
     if (!hydrated) return;
-    saveSettings(state, tempoTrainer, timer);
-  }, [hydrated, state.bpm, state.beatsPerBar, state.beatUnit, state.subdivision, state.sound, state.accentSound, state.accents, state.volume, tempoTrainer, timer.enabled, timer.durationMinutes]);
+    saveSettings(state, tempoTrainer, timer, randomMute);
+  }, [hydrated, state.bpm, state.beatsPerBar, state.beatUnit, state.subdivision, state.sound, state.accentSound, state.accents, state.volume, tempoTrainer, timer.enabled, timer.durationMinutes, randomMute]);
 
   const onBeatCallback: BeatCallback = useCallback((event) => {
     setState((prev) => {
@@ -246,8 +262,9 @@ export function useMetronome() {
       scheduler.setAccentSound(s.accentSound);
       scheduler.setAccents(s.accents);
       scheduler.setVolume(s.volume);
+      scheduler.setRandomMuteChance(randomMute.enabled ? randomMute.chance : 0);
     },
-    [getScheduler, state]
+    [getScheduler, state, randomMute]
   );
 
   const start = useCallback(() => {
@@ -358,6 +375,14 @@ export function useMetronome() {
     []
   );
 
+  // Sync random mute chance to scheduler on change
+  useEffect(() => {
+    const scheduler = schedulerRef.current;
+    if (scheduler) {
+      scheduler.setRandomMuteChance(randomMute.enabled ? randomMute.chance : 0);
+    }
+  }, [randomMute.enabled, randomMute.chance]);
+
   const toggleAccent = useCallback(
     (beatIndex: number) => {
       setState((prev) => {
@@ -398,5 +423,7 @@ export function useMetronome() {
     setTempoTrainer,
     timer,
     setTimer,
+    randomMute,
+    setRandomMute,
   };
 }

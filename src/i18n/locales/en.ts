@@ -17,6 +17,7 @@ export const en: TranslationKeys = {
     flashMode: 'Flash mode',
     language: 'Language',
     more: 'More',
+    randomMute: 'Random Mute',
   },
   flash: {
     exitHint: 'Click × or press ESC to exit',
@@ -114,6 +115,14 @@ export const en: TranslationKeys = {
     'swing-12-8': 'Swing 12/8',
     'half-time': 'Half Time',
     'double-time': 'Double Time',
+  },
+  randomMute: {
+    label: 'Random Mute',
+    desc: 'Randomly silences beats to test your internal rhythm',
+    low: 'Low 20%',
+    medium: 'Mid 35%',
+    high: 'High 50%',
+    veryHigh: 'Max 70%',
   },
   logo: {
     ariaLabel: 'Metronome',
