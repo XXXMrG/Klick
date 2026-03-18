@@ -35,6 +35,7 @@ Most online metronomes feel like toys — laggy clicks, no subdivisions, no acce
 **Practice Tools**
 - Tempo Trainer — auto-increment BPM every N bars to build speed progressively
 - Timer — countdown practice sessions, auto-stops when time is up
+- Random Mute — randomly silences beats to train internal rhythm stability, 4 probability presets (20% / 35% / 50% / 70%)
 - Flash Mode — full-screen visual pulse, great for stage or distance viewing
 
 **Themes & Skins**
@@ -50,6 +51,7 @@ Most online metronomes feel like toys — laggy clicks, no subdivisions, no acce
 - Visual mute — turn off all beat animations while keeping audio
 - Keyboard shortcuts (Space, arrows, Esc)
 - Wake Lock — screen stays on while playing (mobile)
+- Responsive header — overflow menu on mobile keeps the UI clean
 - All settings persisted to localStorage — pick up right where you left off
 
 ## Quick Start
