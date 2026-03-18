@@ -16,6 +16,7 @@ export const ja: TranslationKeys = {
     shortcuts: 'ショートカット',
     flashMode: 'フラッシュモード',
     language: '言語',
+    more: 'その他',
   },
   flash: {
     exitHint: '× をクリック、または ESC で終了',

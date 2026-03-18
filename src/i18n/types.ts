@@ -16,6 +16,7 @@ export interface TranslationKeys {
     shortcuts: string;
     flashMode: string;
     language: string;
+    more: string;
   };
   flash: {
     exitHint: string;

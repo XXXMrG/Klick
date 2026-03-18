@@ -16,6 +16,7 @@ export const zh: TranslationKeys = {
     shortcuts: '键盘快捷键',
     flashMode: '闪烁模式',
     language: '语言',
+    more: '更多',
   },
   flash: {
     exitHint: '点击 × 或按 ESC 退出',

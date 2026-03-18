@@ -31,6 +31,7 @@ import {
   TrendingUp,
   Timer,
   Languages,
+  MoreHorizontal,
 } from 'lucide-react';
 import { useSkin } from '@/hooks/useSkin';
 import SkinPicker from '@/components/metronome/SkinPicker';
@@ -141,6 +142,8 @@ function HomeContent() {
   const { skinId, mode, changeSkin, toggleMode } = useSkin();
   const [isFlashMode, setIsFlashMode] = useState(false);
   const [visualMute, setVisualMute] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
 
   // Read visualMute from storage after mount
   useEffect(() => {
@@ -211,6 +214,18 @@ function HomeContent() {
     const idx = LOCALE_CYCLE.indexOf(locale);
     setLocale(LOCALE_CYCLE[(idx + 1) % LOCALE_CYCLE.length]);
   };
+
+  // Close more menu on click outside
+  useEffect(() => {
+    if (!showMoreMenu) return;
+    const handleClick = (e: MouseEvent) => {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(e.target as Node)) {
+        setShowMoreMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showMoreMenu]);
 
   return (
     <div
@@ -311,6 +326,7 @@ function HomeContent() {
 
         {/* Right icons */}
         <div className="flex items-center gap-1">
+          {/* Primary icons — always visible */}
           <button
             onClick={() => setOpenPanel(p => p === 'trainer' ? null : 'trainer')}
             className="p-2 rounded transition-colors relative"
@@ -356,8 +372,21 @@ function HomeContent() {
             {visualMute ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
           <button
-            onClick={() => setOpenPanel(p => p === 'skin' ? null : 'skin')}
+            onClick={() => setIsFlashMode(true)}
             className="p-2 rounded transition-colors"
+            style={{
+              color: isFlashMode ? 'var(--accent-primary)' : 'var(--text-muted)',
+              backgroundColor: isFlashMode ? 'var(--accent-dim)' : 'transparent',
+            }}
+            title={t.header.flashMode}
+          >
+            <Zap size={18} />
+          </button>
+
+          {/* Secondary icons — hidden on mobile, inline on sm+ */}
+          <button
+            onClick={() => setOpenPanel(p => p === 'skin' ? null : 'skin')}
+            className="p-2 rounded transition-colors hidden sm:flex"
             style={{
               color: openPanel === 'skin' ? 'var(--accent-primary)' : 'var(--text-muted)',
               backgroundColor: openPanel === 'skin' ? 'var(--accent-dim)' : 'transparent',
@@ -368,26 +397,15 @@ function HomeContent() {
           </button>
           <button
             onClick={toggleMode}
-            className="p-2 rounded transition-colors"
+            className="p-2 rounded transition-colors hidden sm:flex"
             style={{ color: 'var(--text-muted)' }}
             title={mode === 'light' ? t.header.darkMode : t.header.lightMode}
           >
             {mode === 'light' ? <Moon size={18} /> : <Sun size={18} />}
           </button>
           <button
-            onClick={() => setShowShortcuts(!showShortcuts)}
-            className="p-2 rounded transition-colors hidden sm:flex"
-            style={{
-              color: showShortcuts ? 'var(--accent-primary)' : 'var(--text-muted)',
-              backgroundColor: showShortcuts ? 'var(--accent-dim)' : 'transparent',
-            }}
-            title={t.header.shortcuts}
-          >
-            <Keyboard size={18} />
-          </button>
-          <button
             onClick={cycleLocale}
-            className="p-2 rounded transition-colors flex items-center gap-1"
+            className="p-2 rounded transition-colors hidden sm:flex items-center gap-1"
             style={{ color: 'var(--text-muted)' }}
             title={t.header.language}
           >
@@ -400,16 +418,77 @@ function HomeContent() {
             </span>
           </button>
           <button
-            onClick={() => setIsFlashMode(true)}
-            className="p-2 rounded transition-colors"
+            onClick={() => setShowShortcuts(!showShortcuts)}
+            className="p-2 rounded transition-colors hidden sm:flex"
             style={{
-              color: isFlashMode ? 'var(--accent-primary)' : 'var(--text-muted)',
-              backgroundColor: isFlashMode ? 'var(--accent-dim)' : 'transparent',
+              color: showShortcuts ? 'var(--accent-primary)' : 'var(--text-muted)',
+              backgroundColor: showShortcuts ? 'var(--accent-dim)' : 'transparent',
             }}
-            title={t.header.flashMode}
+            title={t.header.shortcuts}
           >
-            <Zap size={18} />
+            <Keyboard size={18} />
           </button>
+
+          {/* More button — visible only on mobile */}
+          <div className="relative sm:hidden" ref={moreMenuRef}>
+            <button
+              onClick={() => setShowMoreMenu(v => !v)}
+              className="p-2 rounded transition-colors"
+              style={{
+                color: showMoreMenu ? 'var(--accent-primary)' : 'var(--text-muted)',
+                backgroundColor: showMoreMenu ? 'var(--accent-dim)' : 'transparent',
+              }}
+              title={t.header.more}
+            >
+              <MoreHorizontal size={18} />
+            </button>
+            {showMoreMenu && (
+              <div
+                className="absolute right-0 top-full mt-1 py-1 rounded-lg shadow-lg min-w-[160px] z-50"
+                style={{
+                  backgroundColor: 'var(--bg-surface)',
+                  border: '1px solid var(--border-subtle)',
+                }}
+              >
+                <button
+                  onClick={() => { setOpenPanel(p => p === 'skin' ? null : 'skin'); setShowMoreMenu(false); }}
+                  className="w-full flex items-center gap-3 px-3 py-2 text-sm transition-colors"
+                  style={{
+                    color: openPanel === 'skin' ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                  }}
+                >
+                  <Palette size={16} />
+                  {t.header.skin}
+                </button>
+                <button
+                  onClick={() => { toggleMode(); setShowMoreMenu(false); }}
+                  className="w-full flex items-center gap-3 px-3 py-2 text-sm transition-colors"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
+                  {mode === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+                  {mode === 'light' ? t.header.darkMode : t.header.lightMode}
+                </button>
+                <button
+                  onClick={() => { cycleLocale(); setShowMoreMenu(false); }}
+                  className="w-full flex items-center gap-3 px-3 py-2 text-sm transition-colors"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
+                  <Languages size={16} />
+                  {t.header.language} ({LOCALE_LABELS[locale]})
+                </button>
+                <button
+                  onClick={() => { setShowShortcuts(!showShortcuts); setShowMoreMenu(false); }}
+                  className="w-full flex items-center gap-3 px-3 py-2 text-sm transition-colors"
+                  style={{
+                    color: showShortcuts ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                  }}
+                >
+                  <Keyboard size={16} />
+                  {t.header.shortcuts}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Dropdown panels - positioned absolute below header */}

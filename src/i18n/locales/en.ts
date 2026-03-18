@@ -16,6 +16,7 @@ export const en: TranslationKeys = {
     shortcuts: 'Keyboard shortcuts',
     flashMode: 'Flash mode',
     language: 'Language',
+    more: 'More',
   },
   flash: {
     exitHint: 'Click × or press ESC to exit',
