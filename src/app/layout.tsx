@@ -55,6 +55,26 @@ export default function RootLayout({
                   if (t === 'light' || t === 'dark') {
                     document.documentElement.setAttribute('data-theme', t);
                   }
+                  var s = localStorage.getItem('metronome-skin');
+                  if (s) {
+                    document.documentElement.setAttribute('data-skin', s);
+                  }
+                  var v = localStorage.getItem('metronome-skin-vars');
+                  if (v) {
+                    var vars = JSON.parse(v);
+                    var style = document.documentElement.style;
+                    for (var k in vars) {
+                      if (vars.hasOwnProperty(k)) style.setProperty(k, vars[k]);
+                    }
+                  }
+                  var fu = localStorage.getItem('metronome-skin-fonts-url');
+                  if (fu) {
+                    var link = document.createElement('link');
+                    link.id = 'skin-google-fonts';
+                    link.rel = 'stylesheet';
+                    link.href = fu;
+                    document.head.appendChild(link);
+                  }
                 } catch(e) {}
               })();
             `,
@@ -64,6 +84,25 @@ export default function RootLayout({
       <body
         className={`${bebasNeue.variable} ${jetBrainsMono.variable} ${dmSans.variable} antialiased`}
       >
+        {/* Restore skin font overrides on <body> inline style to beat Next.js class specificity */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var v = localStorage.getItem('metronome-skin-vars');
+                  if (!v) return;
+                  var vars = JSON.parse(v);
+                  var fk = ['--font-display','--font-mono','--font-body'];
+                  var s = document.body.style;
+                  for (var i = 0; i < fk.length; i++) {
+                    if (vars[fk[i]]) s.setProperty(fk[i], vars[fk[i]]);
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
         {children}
       </body>
     </html>

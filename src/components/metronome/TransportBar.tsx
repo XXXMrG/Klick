@@ -28,12 +28,12 @@ export default function TransportBar({ isPlaying, bpm, onToggle, onBpmChange }: 
       {/* Play/Stop button */}
       <button
         onClick={onToggle}
-        className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-lg transition-all active:scale-95"
+        className="transport-play w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-lg transition-all active:scale-95"
         style={{
           backgroundColor: isPlaying ? 'var(--accent-primary)' : 'var(--bg-control)',
           border: `2px solid ${isPlaying ? 'var(--accent-primary)' : 'var(--border-accent)'}`,
           color: isPlaying ? '#fff' : 'var(--accent-primary)',
-          boxShadow: isPlaying ? '0 0 20px rgba(255, 107, 43, 0.3)' : 'none',
+          boxShadow: isPlaying ? '0 0 20px var(--accent-dim)' : 'none',
         }}
       >
         {isPlaying ? <Square size={28} fill="white" /> : <Play size={28} fill="currentColor" />}

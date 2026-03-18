@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useMetronome } from '@/hooks/useMetronome';
 
 import { useKeyboard } from '@/hooks/useKeyboard';
@@ -22,6 +22,7 @@ import {
   Keyboard,
   Sun,
   Moon,
+  Palette,
   Volume2,
   VolumeX,
   X,
@@ -30,8 +31,10 @@ import {
   TrendingUp,
   Timer,
 } from 'lucide-react';
+import { useSkin } from '@/hooks/useSkin';
+import SkinPicker from '@/components/metronome/SkinPicker';
 
-type HeaderPanel = 'trainer' | 'timer' | null;
+type HeaderPanel = 'trainer' | 'timer' | 'skin' | null;
 
 /* ── Flash Mode overlay ── */
 function FlashModeOverlay({
@@ -128,23 +131,14 @@ export default function Home() {
 
   const [openPanel, setOpenPanel] = useState<HeaderPanel>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light' | null>(null);
+  const { skinId, mode, changeSkin, toggleMode } = useSkin();
   const [isFlashMode, setIsFlashMode] = useState(false);
   const [visualMute, setVisualMute] = useState(false);
 
-  // Read theme and visualMute from storage after mount
+  // Read visualMute from storage after mount
   useEffect(() => {
-    const applied = document.documentElement.getAttribute('data-theme');
-    setTheme(applied === 'light' ? 'light' : 'dark');
     setVisualMute(localStorage.getItem('metronome-visual-mute') === 'true');
   }, []);
-
-  // Sync to DOM and localStorage when theme changes
-  useEffect(() => {
-    if (!theme) return;
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('metronome-theme', theme);
-  }, [theme]);
 
   // Sync visualMute to localStorage (skip initial render to avoid overwriting stored value)
   const visualMuteMounted = useRef(false);
@@ -199,10 +193,6 @@ export default function Home() {
   // Visual state — when muted, suppress beat animations
   const visualFlashBeat = visualMute ? null : state.flashBeat;
   const visualIsPlaying = visualMute ? false : state.isPlaying;
-
-  const toggleTheme = useCallback(() => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
-  }, []);
 
   return (
     <div
@@ -348,12 +338,23 @@ export default function Home() {
             {visualMute ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
           <button
-            onClick={toggleTheme}
+            onClick={() => setOpenPanel(p => p === 'skin' ? null : 'skin')}
+            className="p-2 rounded transition-colors"
+            style={{
+              color: openPanel === 'skin' ? 'var(--accent-primary)' : 'var(--text-muted)',
+              backgroundColor: openPanel === 'skin' ? 'var(--accent-dim)' : 'transparent',
+            }}
+            title="皮肤"
+          >
+            <Palette size={18} />
+          </button>
+          <button
+            onClick={toggleMode}
             className="p-2 rounded transition-colors"
             style={{ color: 'var(--text-muted)' }}
-            title={theme === 'light' ? '切换暗色主题' : '切换亮色主题'}
+            title={mode === 'light' ? '切换暗色主题' : '切换亮色主题'}
           >
-            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+            {mode === 'light' ? <Moon size={18} /> : <Sun size={18} />}
           </button>
           <button
             onClick={() => setShowShortcuts(!showShortcuts)}
@@ -409,6 +410,14 @@ export default function Home() {
                   onChange={metronome.setTimer}
                 />
               )}
+              {openPanel === 'skin' && (
+                <SkinPicker
+                  skinId={skinId}
+                  mode={mode}
+                  onSkinChange={changeSkin}
+                  onToggleMode={toggleMode}
+                />
+              )}
             </div>
           </>
         )}
@@ -447,6 +456,7 @@ export default function Home() {
           flashBeat={visualFlashBeat}
           isPlaying={state.isPlaying}
           onBpmChange={metronome.setBpm}
+          skinId={skinId}
         />
 
         {/* Beat Visualizer */}
@@ -513,12 +523,82 @@ export default function Home() {
 
         {/* Control bar: TimeSig, Subdivision, Sound, Volume */}
         <div
-          className="w-full max-w-6xl rounded-lg p-4 sm:p-6"
+          className="skin-control-panel w-full max-w-6xl rounded-lg p-4 sm:p-6 relative overflow-hidden"
           style={{
             backgroundColor: 'var(--bg-surface)',
             border: '1px solid var(--border-subtle)',
           }}
         >
+          {/* Classical: bottom corner flourishes */}
+          {skinId === 'classical' && (
+            <>
+              <span
+                className="absolute pointer-events-none"
+                style={{
+                  bottom: 6, left: 6, width: 20, height: 20,
+                  borderBottom: '2px solid var(--accent-primary)',
+                  borderLeft: '2px solid var(--accent-primary)',
+                  opacity: 0.4,
+                }}
+              />
+              <span
+                className="absolute pointer-events-none"
+                style={{
+                  bottom: 6, right: 6, width: 20, height: 20,
+                  borderBottom: '2px solid var(--accent-primary)',
+                  borderRight: '2px solid var(--accent-primary)',
+                  opacity: 0.4,
+                }}
+              />
+            </>
+          )}
+          {/* Pixel: corner brick block ornaments */}
+          {skinId === 'pixel' && (
+            <>
+              {/* Top-left mini brick */}
+              <span className="absolute pointer-events-none" style={{ top: 4, left: 4 }}>
+                <svg width="16" height="16" viewBox="0 0 16 16" style={{ imageRendering: 'pixelated' }}>
+                  <rect width="16" height="16" fill="var(--accent-secondary)" opacity="0.5" />
+                  <rect width="16" height="1" fill="var(--accent-primary)" opacity="0.4" />
+                  <rect width="1" height="16" fill="var(--accent-primary)" opacity="0.4" />
+                  <rect x="8" y="0" width="1" height="8" fill="var(--bg-primary)" opacity="0.3" />
+                  <rect x="0" y="8" width="16" height="1" fill="var(--bg-primary)" opacity="0.3" />
+                  <rect x="4" y="8" width="1" height="8" fill="var(--bg-primary)" opacity="0.3" />
+                  <rect x="12" y="8" width="1" height="8" fill="var(--bg-primary)" opacity="0.3" />
+                </svg>
+              </span>
+              {/* Top-right mini brick */}
+              <span className="absolute pointer-events-none" style={{ top: 4, right: 4 }}>
+                <svg width="16" height="16" viewBox="0 0 16 16" style={{ imageRendering: 'pixelated' }}>
+                  <rect width="16" height="16" fill="var(--accent-secondary)" opacity="0.5" />
+                  <rect y="0" width="16" height="1" fill="var(--accent-primary)" opacity="0.4" />
+                  <rect x="15" width="1" height="16" fill="var(--accent-primary)" opacity="0.4" />
+                  <rect x="8" y="0" width="1" height="8" fill="var(--bg-primary)" opacity="0.3" />
+                  <rect x="0" y="8" width="16" height="1" fill="var(--bg-primary)" opacity="0.3" />
+                  <rect x="4" y="8" width="1" height="8" fill="var(--bg-primary)" opacity="0.3" />
+                  <rect x="12" y="8" width="1" height="8" fill="var(--bg-primary)" opacity="0.3" />
+                </svg>
+              </span>
+              {/* Bottom-left coin */}
+              <span className="absolute pointer-events-none" style={{ bottom: 6, left: 6 }}>
+                <svg width="10" height="10" viewBox="0 0 10 10" style={{ imageRendering: 'pixelated' }}>
+                  <rect x="3" y="0" width="4" height="10" fill="var(--accent-primary)" opacity="0.5" />
+                  <rect x="1" y="2" width="2" height="6" fill="var(--accent-primary)" opacity="0.5" />
+                  <rect x="7" y="2" width="2" height="6" fill="var(--accent-primary)" opacity="0.5" />
+                  <rect x="4" y="1" width="1" height="1" fill="#fff" opacity="0.4" />
+                </svg>
+              </span>
+              {/* Bottom-right coin */}
+              <span className="absolute pointer-events-none" style={{ bottom: 6, right: 6 }}>
+                <svg width="10" height="10" viewBox="0 0 10 10" style={{ imageRendering: 'pixelated' }}>
+                  <rect x="3" y="0" width="4" height="10" fill="var(--accent-primary)" opacity="0.5" />
+                  <rect x="1" y="2" width="2" height="6" fill="var(--accent-primary)" opacity="0.5" />
+                  <rect x="7" y="2" width="2" height="6" fill="var(--accent-primary)" opacity="0.5" />
+                  <rect x="4" y="1" width="1" height="1" fill="#fff" opacity="0.4" />
+                </svg>
+              </span>
+            </>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <TimeSigPicker
               beatsPerBar={state.beatsPerBar}

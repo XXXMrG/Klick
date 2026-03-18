@@ -19,6 +19,7 @@
 
   --beat-flash: #ff6b2b;
   --beat-downbeat: #ff2b2b;
+  --beat-downbeat-dim: rgba(255, 43, 43, 0.15);
 
   --success: #4ade80;
   --error: #f87171;
@@ -39,6 +40,7 @@
   --border-accent: rgba(217, 79, 26, 0.4);
   --beat-flash: #d94f1a;
   --beat-downbeat: #cc2020;
+  --beat-downbeat-dim: rgba(204, 32, 32, 0.12);
 }
 
 @theme inline {
@@ -56,6 +58,7 @@
   --color-border-accent: var(--border-accent);
   --color-beat-flash: var(--beat-flash);
   --color-beat-downbeat: var(--beat-downbeat);
+  --color-beat-downbeat-dim: var(--beat-downbeat-dim);
   --color-success: var(--success);
   --color-error: var(--error);
   --font-display: var(--font-display);
@@ -99,7 +102,7 @@
   }
   10% {
     text-shadow: 0 0 40px var(--accent-primary),
-      0 0 80px rgba(255, 107, 43, 0.4);
+      0 0 80px var(--accent-dim);
   }
   100% {
     text-shadow: none;
@@ -111,7 +114,7 @@
     box-shadow: inset 0 0 0 0 transparent;
   }
   8% {
-    box-shadow: inset 0 0 60px 12px rgba(255, 107, 43, 0.3);
+    box-shadow: inset 0 0 60px 12px var(--accent-dim);
   }
   100% {
     box-shadow: inset 0 0 0 0 transparent;
@@ -178,4 +181,278 @@ body {
 .dial-tick.active {
   background: var(--accent-primary);
   height: 10px;
+}
+
+/* ═══════════════════════════════════════════════
+   PIXEL SKIN — Nintendo-inspired warm retro
+   ═══════════════════════════════════════════════ */
+
+/* Force 0 border-radius everywhere */
+[data-skin="pixel"] button,
+[data-skin="pixel"] input[type="range"],
+[data-skin="pixel"] div[class*="rounded"],
+[data-skin="pixel"] kbd {
+  border-radius: 0 !important;
+}
+
+/* Scale down BPM number for Press Start 2P proportions */
+[data-skin="pixel"] .bpm-number {
+  font-size: 56px !important;
+}
+@media (min-width: 640px) {
+  [data-skin="pixel"] .bpm-number {
+    font-size: 80px !important;
+  }
+}
+@media (min-width: 1024px) {
+  [data-skin="pixel"] .bpm-number {
+    font-size: 110px !important;
+  }
+}
+
+/* Pixel sky background — soft clouds via radial gradients */
+[data-skin="pixel"] body {
+  background-image:
+    radial-gradient(ellipse 80px 30px at 15% 20%, rgba(255,255,255,0.06) 0%, transparent 100%),
+    radial-gradient(ellipse 120px 35px at 75% 15%, rgba(255,255,255,0.05) 0%, transparent 100%),
+    radial-gradient(ellipse 60px 25px at 45% 80%, rgba(255,255,255,0.04) 0%, transparent 100%),
+    radial-gradient(ellipse 100px 30px at 85% 70%, rgba(255,255,255,0.04) 0%, transparent 100%);
+}
+
+/* Light mode: actual cloud shapes on sky blue */
+[data-skin="pixel"][data-theme="light"] body {
+  background-image:
+    radial-gradient(ellipse 90px 35px at 12% 18%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(ellipse 130px 40px at 70% 12%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(ellipse 70px 28px at 42% 85%, rgba(255,255,255,0.45) 0%, transparent 100%),
+    radial-gradient(ellipse 110px 32px at 88% 75%, rgba(255,255,255,0.4) 0%, transparent 100%);
+}
+
+/* Brick-style control panel — like Mario brick blocks */
+[data-skin="pixel"] .skin-control-panel {
+  border: 4px solid var(--accent-secondary) !important;
+  box-shadow:
+    inset 3px 3px 0 rgba(255,255,255,0.15),
+    inset -3px -3px 0 rgba(0,0,0,0.2),
+    0 4px 0 rgba(0,0,0,0.25);
+  background-image:
+    linear-gradient(var(--border-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px) !important;
+  background-size: 32px 32px !important;
+}
+
+/* Pixel header — game HUD style top bar */
+[data-skin="pixel"] header {
+  border-bottom: 3px solid var(--accent-secondary) !important;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.15);
+}
+
+/* Pixel footer — ground line */
+[data-skin="pixel"] footer {
+  border-top: 4px solid var(--accent-secondary) !important;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      var(--accent-secondary) 0px,
+      var(--accent-secondary) 16px,
+      var(--bg-surface) 16px,
+      var(--bg-surface) 32px
+    );
+  background-size: 100% 4px;
+  background-position: bottom;
+  background-repeat: no-repeat;
+}
+
+/* Beat visualizer dots become squares */
+[data-skin="pixel"] .beat-dot {
+  border-radius: 0 !important;
+  box-shadow:
+    inset 2px 2px 0 rgba(255,255,255,0.2),
+    inset -2px -2px 0 rgba(0,0,0,0.2);
+}
+
+/* Pixel play button — question block style */
+[data-skin="pixel"] .transport-play {
+  border: 4px solid var(--accent-primary) !important;
+  box-shadow:
+    inset 3px 3px 0 rgba(255,255,255,0.25),
+    inset -3px -3px 0 rgba(0,0,0,0.2),
+    0 4px 0 rgba(0,0,0,0.3);
+}
+[data-skin="pixel"] .transport-play:active {
+  box-shadow:
+    inset -3px -3px 0 rgba(255,255,255,0.15),
+    inset 3px 3px 0 rgba(0,0,0,0.15),
+    0 1px 0 rgba(0,0,0,0.3) !important;
+  transform: translateY(3px) scale(0.97) !important;
+}
+
+/* Question block bump animation */
+@keyframes block-bump {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-12px); }
+  50% { transform: translateY(0); }
+  65% { transform: translateY(-4px); }
+  80% { transform: translateY(0); }
+  100% { transform: translateY(0); }
+}
+
+/* Coin pop animation */
+@keyframes coin-pop {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  40% { transform: translateY(-28px) scale(1.1); opacity: 1; }
+  60% { transform: translateY(-32px) scaleY(0.3); opacity: 0.8; }
+  80% { transform: translateY(-20px) scale(0.8); opacity: 0.4; }
+  100% { transform: translateY(-10px) scale(0.5); opacity: 0; }
+}
+
+/* Pixel sparkle */
+@keyframes pixel-sparkle {
+  0%, 100% { opacity: 0; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Pixel float */
+@keyframes pixel-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Pixel BPM number — no smooth transitions, stepped feel */
+[data-skin="pixel"] .bpm-number {
+  transition: none !important;
+  text-shadow:
+    3px 3px 0 rgba(0,0,0,0.3),
+    -1px -1px 0 rgba(255,255,255,0.1);
+}
+
+/* Pixel slider — chunky */
+[data-skin="pixel"] input[type="range"] {
+  height: 8px !important;
+  border: 2px solid var(--text-muted);
+}
+
+/* Pixel buttons — all get 3D push effect */
+[data-skin="pixel"] button {
+  box-shadow:
+    inset 1px 1px 0 rgba(255,255,255,0.15),
+    inset -1px -1px 0 rgba(0,0,0,0.15),
+    0 2px 0 rgba(0,0,0,0.2);
+}
+[data-skin="pixel"] button:active {
+  box-shadow:
+    inset -1px -1px 0 rgba(255,255,255,0.1),
+    inset 1px 1px 0 rgba(0,0,0,0.1) !important;
+  transform: translateY(2px) !important;
+}
+
+/* ═══════════════════════════════════════════════
+   CLASSICAL SKIN — Concert hall elegance
+   ═══════════════════════════════════════════════ */
+
+/* Soft rounded corners */
+[data-skin="classical"] button,
+[data-skin="classical"] div[class*="rounded"] {
+  border-radius: 3px;
+}
+
+/* Parchment texture background */
+[data-skin="classical"] body {
+  background-image:
+    radial-gradient(ellipse at 20% 50%, var(--accent-dim) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, var(--accent-dim) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 0%, var(--accent-dim) 0%, transparent 40%);
+}
+
+/* Elegant control panel — gold inner glow + decorative border */
+[data-skin="classical"] .skin-control-panel {
+  border: 1px solid var(--border-accent) !important;
+  box-shadow:
+    inset 0 0 30px var(--accent-dim),
+    0 4px 20px rgba(0,0,0,0.15);
+  position: relative;
+}
+
+/* Corner flourishes on control panel */
+[data-skin="classical"] .skin-control-panel::before,
+[data-skin="classical"] .skin-control-panel::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: var(--accent-primary);
+  opacity: 0.4;
+}
+[data-skin="classical"] .skin-control-panel::before {
+  top: 6px;
+  left: 6px;
+  border-top: 2px solid;
+  border-left: 2px solid;
+}
+[data-skin="classical"] .skin-control-panel::after {
+  top: 6px;
+  right: 6px;
+  border-top: 2px solid;
+  border-right: 2px solid;
+}
+
+/* Classical header — elegant thin gold line */
+[data-skin="classical"] header {
+  border-bottom: 1px solid var(--border-accent) !important;
+}
+
+/* Classical footer */
+[data-skin="classical"] footer {
+  border-top: 1px solid var(--border-accent) !important;
+  font-style: italic;
+}
+
+/* Serif italic for BPM label */
+[data-skin="classical"] [class*="tracking-widest"] {
+  font-style: italic;
+  letter-spacing: 0.25em;
+}
+
+/* Gold shimmer on BPM number beat */
+@keyframes classical-glow {
+  0% { text-shadow: none; filter: brightness(1); }
+  10% {
+    text-shadow:
+      0 0 20px var(--accent-primary),
+      0 0 60px var(--accent-dim),
+      0 2px 4px rgba(0,0,0,0.3);
+    filter: brightness(1.2);
+  }
+  100% { text-shadow: none; filter: brightness(1); }
+}
+
+[data-skin="classical"] .bpm-number {
+  letter-spacing: 0.05em !important;
+}
+
+/* Classical beat dot — refined glow instead of harsh shadow */
+[data-skin="classical"] .beat-dot {
+  transition: all 0.15s ease-out !important;
+}
+
+/* Classical play button — gold border refinement */
+[data-skin="classical"] .transport-play {
+  border: 2px solid var(--accent-primary) !important;
+  box-shadow: 0 2px 12px var(--accent-dim);
+}
+
+/* Golden divider animation */
+@keyframes gold-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Classical pulse bar — wider, more elegant */
+[data-skin="classical"] .pulse-bar {
+  height: 2px !important;
+}
+
+/* Classical slider */
+[data-skin="classical"] input[type="range"] {
+  height: 3px !important;
 }

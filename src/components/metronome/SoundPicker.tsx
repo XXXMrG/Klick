@@ -126,9 +126,9 @@ export default function SoundPicker({
               style={{
                 fontFamily: 'var(--font-mono), monospace',
                 backgroundColor:
-                  accentSound === s.value ? 'rgba(255,43,43,0.15)' : 'var(--bg-control)',
+                  accentSound === s.value ? 'var(--beat-downbeat-dim)' : 'var(--bg-control)',
                 border: `1px solid ${
-                  accentSound === s.value ? 'rgba(255,43,43,0.5)' : 'var(--border-subtle)'
+                  accentSound === s.value ? 'var(--border-accent)' : 'var(--border-subtle)'
                 }`,
                 color:
                   accentSound === s.value

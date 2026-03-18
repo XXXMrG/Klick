@@ -49,7 +49,7 @@ export default function BeatVisualizer({
           <button
             key={i}
             onClick={() => onToggleAccent(i)}
-            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full relative flex items-center justify-center flex-shrink-0"
+            className="beat-dot w-8 h-8 sm:w-10 sm:h-10 rounded-full relative flex items-center justify-center flex-shrink-0"
             style={{
               backgroundColor: bgColor,
               border: borderStyle,

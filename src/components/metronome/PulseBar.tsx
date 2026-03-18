@@ -12,7 +12,7 @@ export default function PulseBar({ isPlaying, flashBeat, isDownbeat }: PulseBarP
 
   return (
     <div
-      className="w-full h-1 relative overflow-hidden"
+      className="pulse-bar w-full h-1 relative overflow-hidden"
       style={{ backgroundColor: 'var(--bg-surface)' }}
     >
       <div
