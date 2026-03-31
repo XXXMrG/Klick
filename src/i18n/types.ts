@@ -127,4 +127,37 @@ export interface TranslationKeys {
   logo: {
     ariaLabel: string;
   };
+  practice: {
+    title: string;
+    backToMetronome: string;
+    todayPlan: string;
+    todayTab: string;
+    libraryTab: string;
+    library: string;
+    refresh: string;
+    selectExercise: string;
+    play: string;
+    stop: string;
+    markDone: string;
+    completed: string;
+    defaultBpm: string;
+    targetBpm: string;
+    bestBpm: string;
+    streakDays: string;
+    todayDone: string;
+    totalExercises: string;
+    exercises: string;
+    allBooks: string;
+    allCategories: string;
+    book: string;
+    category: string;
+    catRolls: string;
+    catSingleBeat: string;
+    catParadiddles: string;
+    catFlams: string;
+    catDrags: string;
+    searchPlaceholder: string;
+    footerHint: string;
+    practiceLink: string;
+  };
 }

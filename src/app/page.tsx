@@ -34,7 +34,9 @@ import {
   Languages,
   MoreHorizontal,
   Dices,
+  BookOpen,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useSkin } from '@/hooks/useSkin';
 import SkinPicker from '@/components/metronome/SkinPicker';
 import { I18nProvider, useI18n, Locale } from '@/i18n';
@@ -328,6 +330,15 @@ function HomeContent() {
 
         {/* Right icons */}
         <div className="flex items-center gap-1">
+          {/* Practice link */}
+          <Link
+            href="/practice"
+            className="p-2 rounded transition-colors"
+            style={{ color: 'var(--text-muted)' }}
+            title={t.practice.practiceLink}
+          >
+            <BookOpen size={18} />
+          </Link>
           {/* Primary icons — always visible */}
           <button
             onClick={() => setOpenPanel(p => p === 'trainer' ? null : 'trainer')}
